@@ -108,6 +108,8 @@
     const mode = effectiveTheme();
     document.documentElement.dataset.mode = mode;
     $('meta-theme').setAttribute('content', mode === 'dark' ? '#111318' : '#f6f7fb');
+    // 切换主题后按新配色重绘当前二维码
+    if (state.qr && state.qr.code && !els.viewPass.hidden) drawQr(state.qr.code);
   }
   if (darkMq.addEventListener) darkMq.addEventListener('change', applyTheme);
 
@@ -405,9 +407,11 @@
     c.width = size;
     c.height = size;
     const ctx = c.getContext('2d');
-    ctx.fillStyle = '#ffffff';
+    // 亮色：白底黑码；暗色：黑底白码（反色二维码）
+    const dark = document.documentElement.dataset.mode === 'dark';
+    ctx.fillStyle = dark ? '#000000' : '#ffffff';
     ctx.fillRect(0, 0, size, size);
-    ctx.fillStyle = '#000000';
+    ctx.fillStyle = dark ? '#ffffff' : '#000000';
     for (let r = 0; r < n; r++) {
       for (let col = 0; col < n; col++) {
         if (qr.isDark(r, col)) ctx.fillRect((col + quiet) * scale, (r + quiet) * scale, scale, scale);

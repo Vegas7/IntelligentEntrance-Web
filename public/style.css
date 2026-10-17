@@ -153,7 +153,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .avatar-btn img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
 .qr-card {
-  /* 二维码卡片始终白底，暗色模式下也保证扫码对比度 */
+  /* 亮色：白底黑码；暗色样式见下方 data-mode="dark" 规则（黑底白码） */
   background: #ffffff;
   color: #1b1d22;
   border-radius: 24px;
@@ -179,6 +179,17 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .qr-meta .icon-btn.small:active { background: #eceff5; }
 .qr-progress { height: 3px; background: #eceff5; border-radius: 3px; overflow: hidden; margin: 6px 8px 0; }
 .qr-progress > div { height: 100%; width: 100%; background: #2f5bd3; transform-origin: left; transition: transform 1s linear; }
+
+/* 暗色模式：黑底白码，卡片与二维码底色一致（纯黑），data-mode 由 app.js 维护 */
+:root[data-mode="dark"] .qr-card { background: #000000; color: #e8eaf0; box-shadow: 0 0 0 1px #262a33; }
+:root[data-mode="dark"] .qr-placeholder { color: #a2a8b6; background: rgba(0, 0, 0, .75); }
+:root[data-mode="dark"] .qr-meta { color: #a2a8b6; }
+:root[data-mode="dark"] .qr-floor,
+:root[data-mode="dark"] .qr-meta .icon-btn.small { color: #8eabff; }
+:root[data-mode="dark"] .qr-floor:not(:empty)::after { color: #4a5060; }
+:root[data-mode="dark"] .qr-meta .icon-btn.small:active { background: #1b1e25; }
+:root[data-mode="dark"] .qr-progress { background: #262a33; }
+:root[data-mode="dark"] .qr-progress > div { background: #8eabff; }
 
 .floor-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 20px 4px 10px; }
 .floor-head h2 { margin: 0; font-size: 16px; font-weight: 700; color: var(--text); }
