@@ -1,24 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
   <!-- 应用图标：满幅不透明背景（iOS 会把透明区域填成黑色），主体位于中心 80% 安全区内，亮/暗主屏幕都适用 -->
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#5b8cff"/>
-      <stop offset="1" stop-color="#2a4fcf"/>
-    </linearGradient>
-    <radialGradient id="glow" cx="0.3" cy="0.22" r="0.75">
-      <stop offset="0" stop-color="#ffffff" stop-opacity=".22"/>
-      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
-    </radialGradient>
-  </defs>
-  <rect width="1024" height="1024" fill="url(#bg)"/>
-  <rect width="1024" height="1024" fill="url(#glow)"/>
+  <rect width="1024" height="1024" fill="#ffffff"/>
 
   <g transform="translate(110.65 115.25) scale(1.15)">
-    <ellipse cx="365" cy="582" rx="185" ry="22" fill="#10237a" opacity=".35"/>
+    <ellipse cx="365" cy="582" rx="185" ry="22" fill="#d6d8dc"/>
     <path d="M168 284 C128 282 98 302 101 330 C104 356 136 370 172 372" fill="#ffffff" stroke="#111111" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
     <path d="M213 522 C190 500 172 450 168 380 C162 270 175 170 245 120 C300 82 390 90 430 140 C470 190 478 280 495 360 C512 440 550 480 598 508 C560 525 500 528 455 520 C420 512 400 498 380 505 C355 515 345 532 320 530 C295 528 280 500 255 498 C235 497 230 528 213 522 Z" fill="#ffffff"/>
-    <path d="M428 140 C468 190 476 280 493 360 C510 440 548 478 590 504 C540 496 492 470 472 430 C452 384 458 250 428 140 Z" fill="#d3ddf5"/>
-    <path d="M372 512 C388 504 404 504 418 512 C404 520 388 522 372 512 Z" fill="#d3ddf5"/>
+    <path d="M428 140 C468 190 476 280 493 360 C510 440 548 478 590 504 C540 496 492 470 472 430 C452 384 458 250 428 140 Z" fill="#d9d9d9"/>
+    <path d="M372 512 C388 504 404 504 418 512 C404 520 388 522 372 512 Z" fill="#d9d9d9"/>
     <g fill="none" stroke="#111111" stroke-width="15" stroke-linecap="round" stroke-linejoin="round">
       <path d="M213 522 C190 500 172 450 168 380 C162 270 175 170 245 120 C300 82 390 90 430 140 C470 190 478 280 495 360 C512 440 550 480 598 508 C560 525 500 528 455 520 C420 512 400 498 380 505 C355 515 345 532 320 530 C295 528 280 500 255 498 C235 497 230 528 213 522 Z"/>
       <path d="M245 286 Q270 306 293 288"/>
