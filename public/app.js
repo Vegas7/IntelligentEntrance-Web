@@ -109,7 +109,7 @@
     document.documentElement.dataset.mode = mode;
     $('meta-theme').setAttribute('content', mode === 'dark' ? '#111318' : '#f6f7fb');
     // 添加到主屏幕时 iOS 读取的图标与当前主题一致（暗色 → 黑底）
-    $('touch-icon').setAttribute('href', mode === 'dark' ? 'apple-touch-icon-dark.png' : 'apple-touch-icon.png');
+    $('touch-icon').setAttribute('href', window.IE_TOUCH_ICON_FORCED || (mode === 'dark' ? 'apple-touch-icon-dark.png' : 'apple-touch-icon.png'));
   }
   if (darkMq.addEventListener) darkMq.addEventListener('change', applyTheme);
 

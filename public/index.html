@@ -26,11 +26,16 @@
   <script>
     // iOS 不支持网页快捷方式的自适应图标，且只在「添加到主屏幕」那一刻读取一次图标：
     // 按当前主题（手动选择优先，否则跟随系统）提供白底 / 黑底版本；之后的切换由 app.js 的 applyTheme() 同步。
+    // 实机测试：?icon=white / dark / clear 强制使用指定图标（clear = 透明背景，只有小幽灵）。
     (function () {
+      var ICONS = { white: 'apple-touch-icon.png', dark: 'apple-touch-icon-dark.png', clear: 'apple-touch-icon-clear.png' };
       var link = document.getElementById('touch-icon');
+      var forced = null;
+      try { forced = ICONS[new URLSearchParams(location.search).get('icon')] || null; } catch (e) {}
+      window.IE_TOUCH_ICON_FORCED = forced;
       var t = document.documentElement.getAttribute('data-theme');
       var dark = t ? t === 'dark' : !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
-      if (link && dark) link.href = 'apple-touch-icon-dark.png';
+      if (link) link.href = forced || (dark ? ICONS.dark : ICONS.white);
     })();
   </script>
   <link rel="stylesheet" href="style.css">
