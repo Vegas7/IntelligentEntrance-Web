@@ -19,9 +19,20 @@
     })();
   </script>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="icon" href="icon.svg" type="image/svg+xml" media="(prefers-color-scheme: light)">
+  <link rel="icon" href="icon-dark.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="icon-192.png" type="image/png" sizes="192x192">
-  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link id="touch-icon" rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <script>
+    // iOS 不支持网页快捷方式的自适应图标，且只在「添加到主屏幕」那一刻读取一次图标：
+    // 按当前主题（手动选择优先，否则跟随系统）提供白底 / 黑底版本；之后的切换由 app.js 的 applyTheme() 同步。
+    (function () {
+      var link = document.getElementById('touch-icon');
+      var t = document.documentElement.getAttribute('data-theme');
+      var dark = t ? t === 'dark' : !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      if (link && dark) link.href = 'apple-touch-icon-dark.png';
+    })();
+  </script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
