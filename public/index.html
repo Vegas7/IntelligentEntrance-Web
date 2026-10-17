@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta id="meta-theme" name="theme-color" content="#f6f7fb">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="智能通行">
+  <meta name="referrer" content="no-referrer">
+  <title>智能通行</title>
+  <script>
+    // 首帧前应用用户选择的主题，避免闪烁
+    (function () {
+      try {
+        var t = JSON.parse(localStorage.getItem('ie.theme'));
+        if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.png">
+  <link rel="apple-touch-icon" href="icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- 语言 / 主题切换按钮模板，登录页与通行页各放一组 -->
+  <template id="tpl-prefs">
+    <button type="button" class="icon-btn js-lang" data-i18n-aria="ui.lang"><span class="lang-label"></span></button>
+    <button type="button" class="icon-btn js-theme" data-i18n-aria="ui.theme">
+      <svg class="ic-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      <svg class="ic-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.5 1.5M17.2 17.2l1.5 1.5M5.3 18.7l1.5-1.5M17.2 6.8l1.5-1.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </template>
+
+  <!-- ================= 登录 ================= -->
+  <main id="view-login" class="view" hidden>
+    <div class="login-prefs js-prefs"></div>
+    <div class="login-wrap">
+      <img class="login-logo" src="icon.png" alt="">
+      <h1 class="login-title" data-i18n="app.title">智能通行</h1>
+      <p class="login-sub" data-i18n="login.sub">轻量 Web 版 · 无广告 · 无需定位</p>
+
+      <div class="tabs" role="tablist">
+        <button class="tab is-active" role="tab" data-tab="pwd" data-i18n="login.tabPwd">密码登录</button>
+        <button class="tab" role="tab" data-tab="sms" data-i18n="login.tabSms">验证码登录</button>
+      </div>
+
+      <form id="form-pwd" class="form" autocomplete="on">
+        <label class="field">
+          <span data-i18n="login.phone">手机号</span>
+          <input id="pwd-phone" name="username" type="tel" inputmode="numeric" maxlength="11" autocomplete="username" data-i18n-placeholder="login.phonePh" required>
+        </label>
+        <label class="field">
+          <span data-i18n="login.password">密码</span>
+          <input id="pwd-password" name="password" type="password" autocomplete="current-password" data-i18n-placeholder="login.passwordPh" required>
+        </label>
+        <button class="btn btn-primary js-submit" type="submit" data-i18n="login.submit">登录</button>
+      </form>
+
+      <form id="form-sms" class="form" autocomplete="on" hidden>
+        <label class="field">
+          <span data-i18n="login.phone">手机号</span>
+          <input id="sms-phone" type="tel" inputmode="numeric" maxlength="11" autocomplete="tel" data-i18n-placeholder="login.phonePh" required>
+        </label>
+        <label class="field">
+          <span data-i18n="login.code">验证码</span>
+          <div class="field-row">
+            <input id="sms-code" type="text" inputmode="numeric" maxlength="8" autocomplete="one-time-code" data-i18n-placeholder="login.codePh" required>
+            <button id="btn-send-sms" class="btn btn-tonal" type="button">获取验证码</button>
+          </div>
+        </label>
+        <button class="btn btn-primary js-submit" type="submit" data-i18n="login.submit">登录</button>
+      </form>
+
+      <p id="login-msg" class="login-msg" role="status"></p>
+      <p class="login-foot" data-i18n="login.foot">修改昵称 / 密码 / 注销账号等操作请使用原版 App</p>
+    </div>
+  </main>
+
+  <!-- ================= 通行 ================= -->
+  <main id="view-pass" class="view" hidden>
+    <header class="topbar">
+      <h1 id="building-name" class="topbar-title">智能通行</h1>
+      <div class="topbar-prefs js-prefs"></div>
+      <button id="btn-debug" class="icon-btn" data-i18n-aria="pass.debug">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8M9 4v3.5L4.5 17a2 2 0 0 0 1.8 3h11.4a2 2 0 0 0 1.8-3L15 7.5V4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.5 14h9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+      <button id="btn-profile" class="avatar-btn" data-i18n-aria="pass.profile">
+        <img src="ghost.svg?v=3" alt="">
+      </button>
+    </header>
+
+    <section class="qr-card" data-i18n-aria="pass.qr">
+      <div class="qr-box">
+        <canvas id="qr-canvas"></canvas>
+        <div id="qr-placeholder" class="qr-placeholder"></div>
+      </div>
+      <div class="qr-meta">
+        <span id="qr-floor" class="qr-floor"></span>
+        <span id="qr-countdown" class="qr-countdown"></span>
+        <button id="btn-refresh" class="icon-btn small" data-i18n-aria="pass.refresh">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v4.5h-4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+      <div class="qr-progress"><div id="qr-progress-bar"></div></div>
+    </section>
+
+    <div class="floor-head">
+      <h2 id="floor-title"></h2>
+      <button id="btn-mode" class="chip"></button>
+    </div>
+    <div id="floor-grid" class="floor-grid" role="list"></div>
+    <p id="floor-empty" class="floor-empty" hidden></p>
+  </main>
+
+  <!-- ================= 个人中心 ================= -->
+  <dialog id="sheet-profile" class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="profile-head">
+      <img class="profile-avatar" src="ghost.svg?v=3" alt="">
+      <div>
+        <div id="profile-name" class="profile-name"></div>
+        <div id="profile-phone" class="profile-phone"></div>
+        <div id="profile-building" class="profile-building"></div>
+      </div>
+    </div>
+    <div class="settings">
+      <label class="setting">
+        <span>
+          <b data-i18n="profile.wakeLock">保持屏幕常亮</b>
+          <small data-i18n="profile.wakeLockDesc">停留在通行页时不自动锁屏（需 HTTPS）</small>
+        </span>
+        <input id="set-wakelock" type="checkbox" class="switch">
+      </label>
+    </div>
+    <button id="btn-logout" class="btn btn-danger" data-i18n="profile.logout">退出登录 / 切换账号</button>
+    <button class="btn btn-text" data-close data-i18n="common.close">关闭</button>
+  </dialog>
+
+  <!-- ================= 调试日志 ================= -->
+  <dialog id="sheet-debug" class="sheet sheet-tall">
+    <div class="sheet-handle"></div>
+    <div class="debug-head">
+      <h2 data-i18n="debug.title">网络与事件日志</h2>
+      <div class="debug-actions">
+        <button id="btn-log-export" class="chip" data-i18n="debug.export">导出</button>
+        <button id="btn-log-clear" class="chip" data-i18n="debug.clear">清空</button>
+        <button class="chip" data-close data-i18n="common.close">关闭</button>
+      </div>
+    </div>
+    <div id="debug-list" class="debug-list"></div>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="vendor/qrcode.js"></script>
+  <script src="i18n.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

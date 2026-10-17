@@ -1,0 +1,13 @@
+# 追加到现有 /etc/caddy/Caddyfile（可与其他站点共用同一个 Caddy）
+entrance.example.com {
+    encode zstd gzip
+
+    header {
+        Strict-Transport-Security "max-age=31536000"
+        X-Content-Type-Options    "nosniff"
+        Referrer-Policy           "no-referrer"
+        X-Frame-Options           "DENY"
+    }
+
+    reverse_proxy 127.0.0.1:8010
+}

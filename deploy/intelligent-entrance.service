@@ -1,0 +1,26 @@
+[Unit]
+Description=IntelligentEntrance Web (Smart Pass)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=entrance
+Group=entrance
+WorkingDirectory=/opt/intelligent-entrance
+Environment=HOST=127.0.0.1
+Environment=PORT=8010
+ExecStart=/usr/bin/node /opt/intelligent-entrance/server.js
+Restart=always
+RestartSec=3
+MemoryMax=128M
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+
+[Install]
+WantedBy=multi-user.target

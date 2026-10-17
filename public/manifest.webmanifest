@@ -1,0 +1,11 @@
+{
+  "name": "智能通行",
+  "short_name": "智能通行",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f6f7fb",
+  "theme_color": "#f6f7fb",
+  "icons": [{ "src": "icon.png", "sizes": "160x160", "type": "image/png", "purpose": "any" }]
+}
