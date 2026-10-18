@@ -1,32 +1,39 @@
 /* =====================================================================
-   Liquid Glass 风格（参考 iOS 26）
-   - 玻璃材质：半透明 + 背景模糊/增饱和 + 高光描边 + 柔和投影
-   - 二维码本身始终放在不透明底板上（亮色白底黑码 / 暗色黑底白码），保证扫码
+   iOS 26 风格
+   - 导航 / 浮动控件层使用 Liquid Glass（半透明 + 模糊 + 高光描边）：
+     顶部工具按钮组、头像按钮、面板标题栏按钮、登录页切换按钮、toast
+   - 内容层使用 iOS 系统的实色分组样式（不加玻璃、描边和光晕）：
+     弹出面板本身、列表分组、二维码卡片、楼层按钮、输入框、分段控件
+   - 二维码始终放在不透明底板上（亮色白底黑码 / 暗色黑底白码），保证扫码
    ===================================================================== */
 :root {
-  --bg: #f2f2f7;
+  /* iOS 系统色（浅色） */
+  --bg: #f2f2f7;            /* systemGroupedBackground */
+  --surface: #ffffff;       /* secondarySystemGroupedBackground：卡片 / 单元格 */
+  --sheet-bg: #f2f2f7;      /* 弹出面板底色 */
+  --sheet-cell: #ffffff;    /* 面板内的分组单元格 */
+  --fill: rgba(120, 120, 128, .12);
+  --seg-thumb: #ffffff;
 
   --label: #000000;
-  --label-2: rgba(60, 60, 67, .62);
-  --label-3: rgba(60, 60, 67, .32);
+  --label-2: rgba(60, 60, 67, .6);
+  --label-3: rgba(60, 60, 67, .3);
+  --separator: rgba(60, 60, 67, .29);
   --tint: #007aff;
   --on-tint: #ffffff;
   --red: #ff3b30;
   --green: #34c759;
-  --separator: rgba(60, 60, 67, .16);
-  --fill: rgba(120, 120, 128, .14);
 
-  --glass: rgba(255, 255, 255, .52);
-  --glass-strong: rgba(255, 255, 255, .74);
+  /* 玻璃（仅导航 / 浮动控件） */
+  --glass: rgba(255, 255, 255, .6);
+  --glass-strong: rgba(255, 255, 255, .78);
   --glass-rim: rgba(255, 255, 255, .85);
   --glass-edge: rgba(0, 0, 0, .06);
   --glass-hi: rgba(255, 255, 255, .95);
   --rim-hi: rgba(255, 255, 255, .95);
-  --sheet-bg: rgba(248, 248, 250, .92);
+  --glass-shadow: 0 6px 20px rgba(0, 0, 0, .08), 0 1px 3px rgba(0, 0, 0, .06);
   --sheet-btn: rgba(255, 255, 255, .78);
-  --seg-thumb: rgba(255, 255, 255, .9);
-  --glass-shadow: 0 10px 30px rgba(20, 30, 60, .10), 0 1px 3px rgba(20, 30, 60, .06);
-  --blur: blur(22px) saturate(180%);
+  --blur: blur(20px) saturate(180%);
 
   --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "PingFang SC", "Hiragino Sans GB", system-ui, "Microsoft YaHei", "Noto Sans SC", sans-serif;
   color-scheme: light;
@@ -35,47 +42,51 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #000000;
+    --surface: #1c1c1e;
+    --sheet-bg: #1c1c1e;
+    --sheet-cell: #2c2c2e;
+    --fill: rgba(118, 118, 128, .24);
+    --seg-thumb: #636366;
     --label: #ffffff;
-    --label-2: rgba(235, 235, 245, .62);
-    --label-3: rgba(235, 235, 245, .30);
+    --label-2: rgba(235, 235, 245, .6);
+    --label-3: rgba(235, 235, 245, .3);
+    --separator: rgba(84, 84, 88, .65);
     --tint: #0a84ff;
     --red: #ff453a;
     --green: #30d158;
-    --separator: rgba(84, 84, 88, .55);
-    --fill: rgba(120, 120, 128, .26);
-    --glass: rgba(40, 40, 46, .48);
-    --glass-strong: rgba(30, 30, 34, .78);
+    --glass: rgba(44, 44, 48, .55);
+    --glass-strong: rgba(36, 36, 40, .8);
     --glass-rim: rgba(255, 255, 255, .16);
     --glass-edge: rgba(0, 0, 0, .5);
     --glass-hi: rgba(255, 255, 255, .22);
     --rim-hi: rgba(255, 255, 255, .42);
-    --sheet-bg: rgba(28, 28, 30, .92);
+    --glass-shadow: 0 6px 20px rgba(0, 0, 0, .45), 0 1px 3px rgba(0, 0, 0, .3);
     --sheet-btn: rgba(255, 255, 255, .12);
-    --seg-thumb: rgba(255, 255, 255, .2);
-    --glass-shadow: 0 10px 30px rgba(0, 0, 0, .45), 0 1px 3px rgba(0, 0, 0, .3);
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #000000;
+  --surface: #1c1c1e;
+  --sheet-bg: #1c1c1e;
+  --sheet-cell: #2c2c2e;
+  --fill: rgba(118, 118, 128, .24);
+  --seg-thumb: #636366;
   --label: #ffffff;
-  --label-2: rgba(235, 235, 245, .62);
-  --label-3: rgba(235, 235, 245, .30);
+  --label-2: rgba(235, 235, 245, .6);
+  --label-3: rgba(235, 235, 245, .3);
+  --separator: rgba(84, 84, 88, .65);
   --tint: #0a84ff;
   --red: #ff453a;
   --green: #30d158;
-  --separator: rgba(84, 84, 88, .55);
-  --fill: rgba(120, 120, 128, .26);
-  --glass: rgba(40, 40, 46, .48);
-  --glass-strong: rgba(30, 30, 34, .78);
+  --glass: rgba(44, 44, 48, .55);
+  --glass-strong: rgba(36, 36, 40, .8);
   --glass-rim: rgba(255, 255, 255, .16);
   --glass-edge: rgba(0, 0, 0, .5);
   --glass-hi: rgba(255, 255, 255, .22);
   --rim-hi: rgba(255, 255, 255, .42);
-  --sheet-bg: rgba(28, 28, 30, .92);
+  --glass-shadow: 0 6px 20px rgba(0, 0, 0, .45), 0 1px 3px rgba(0, 0, 0, .3);
   --sheet-btn: rgba(255, 255, 255, .12);
-  --seg-thumb: rgba(255, 255, 255, .2);
-  --glass-shadow: 0 10px 30px rgba(0, 0, 0, .45), 0 1px 3px rgba(0, 0, 0, .3);
   color-scheme: dark;
 }
 
@@ -100,19 +111,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
   padding: env(safe-area-inset-top) 16px calc(env(safe-area-inset-bottom) + 28px);
 }
 
-/* ---------- 玻璃材质（共用） ---------- */
-.glass,
+/* ---------- Liquid Glass：仅用于导航 / 浮动控件 ---------- */
 .glass-group,
 .avatar-btn,
-.qr-card,
-.chip,
-.floor-tile,
-.tabs,
-.field input,
-.btn-tonal,
-.btn-glass,
-.settings,
-.log,
 .toast {
   background: var(--glass);
   -webkit-backdrop-filter: var(--blur);
@@ -120,11 +121,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
   border: 1px solid var(--glass-rim);
   box-shadow: inset 0 1px 0 var(--glass-hi), inset 0 0 0 .5px var(--glass-edge), var(--glass-shadow);
 }
-
-/* 镜面高光边：左上、右下更亮的渐变描边，模拟玻璃边缘的折射高光 */
-.glass-group, .avatar-btn, .qr-card, .chip, .floor-tile, .tabs, .settings, .btn-glass, .btn-tonal, .sheet-btn { position: relative; }
-.glass-group::before, .avatar-btn::before, .qr-card::before, .chip::before, .floor-tile::before,
-.tabs::before, .settings::before, .btn-glass::before, .btn-tonal::before, .sheet-btn::before {
+/* 镜面高光边：左上、右下更亮的渐变描边 */
+.glass-group, .avatar-btn, .sheet-btn { position: relative; }
+.glass-group::before, .avatar-btn::before, .sheet-btn::before {
   content: "";
   position: absolute;
   inset: -1px;
@@ -137,13 +136,12 @@ button { font: inherit; color: inherit; cursor: pointer; }
   mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
 }
 
-/* 按压反馈：轻微缩放 + 提亮（Liquid Glass 的“果冻”触感） */
+/* 按压反馈：轻微缩放 */
 .icon-btn, .avatar-btn, .chip, .floor-tile, .btn, .tab, .sheet-btn {
-  transition: transform .18s cubic-bezier(.3, .7, .4, 1.4), background-color .2s ease, box-shadow .2s ease, filter .2s ease;
+  transition: transform .18s cubic-bezier(.3, .7, .4, 1.4), background-color .2s ease, opacity .2s ease;
 }
 .icon-btn:active, .avatar-btn:active, .chip:active, .floor-tile:active, .btn:active:not(:disabled), .tab:active, .sheet-btn:active {
-  transform: scale(.94);
-  filter: brightness(1.08);
+  transform: scale(.96);
 }
 
 /* ---------- buttons ---------- */
@@ -157,14 +155,13 @@ button { font: inherit; color: inherit; cursor: pointer; }
   font-size: 17px;
 }
 .btn:disabled { opacity: .5; cursor: default; }
-/* 主按钮：带高光的着色玻璃 */
-.btn-primary {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--tint) 82%, #ffffff), var(--tint));
-  color: var(--on-tint);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45), inset 0 -1px 0 rgba(0, 0, 0, .12), 0 8px 22px color-mix(in srgb, var(--tint) 35%, transparent);
+.btn-primary { background: var(--tint); color: var(--on-tint); }
+.btn-tonal {
+  width: auto; white-space: nowrap; font-size: 15px; padding: 0 16px;
+  background: color-mix(in srgb, var(--tint) 15%, transparent); color: var(--tint);
 }
-.btn-tonal { width: auto; white-space: nowrap; font-size: 15px; padding: 0 16px; color: var(--tint); }
-.btn-glass { color: var(--red); margin-top: 18px; }
+/* 列表式按钮行（如退出登录）：实色单元格 + 红字 */
+.btn-row { background: var(--sheet-cell); color: var(--red); border-radius: 26px; margin-top: 20px; font-weight: 500; }
 
 .icon-btn {
   width: 40px; height: 40px;
@@ -182,9 +179,12 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .glass-group .icon-btn { width: 38px; height: 38px; }
 .js-prefs { display: flex; align-items: center; }
 
+/* 普通胶囊按钮（内容层）：实色填充 + 着色文字 */
 .chip {
+  border: 0;
   border-radius: 999px;
   padding: 7px 14px;
+  background: var(--fill);
   font-size: 14px;
   font-weight: 500;
   color: var(--tint);
@@ -201,19 +201,19 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .login-wrap { padding-top: 4vh; }
 .login-logo {
   width: 76px; height: 76px; border-radius: 18px; display: block; margin: 0 auto;
-  box-shadow: inset 0 0 0 .5px var(--glass-edge), 0 10px 28px rgba(20, 30, 60, .16);
+  box-shadow: 0 0 0 .5px var(--separator), 0 6px 18px rgba(0, 0, 0, .08);
 }
-:root[data-mode="dark"] .login-logo { content: url("icon-dark.svg"); box-shadow: 0 0 0 1px var(--glass-rim), 0 10px 28px rgba(0, 0, 0, .5); }
+:root[data-mode="dark"] .login-logo { content: url("icon-dark.svg"); box-shadow: 0 0 0 .5px var(--separator); }
 .login-title { text-align: center; margin: 18px 0 4px; font-size: 32px; font-weight: 700; letter-spacing: -.02em; }
 .login-sub { text-align: center; margin: 0 0 28px; color: var(--label-2); font-size: 14px; }
 
-/* 分段控件：玻璃轨道 + 亮色滑块 */
-.tabs { display: flex; border-radius: 999px; padding: 4px; margin-bottom: 20px; }
-.tab { flex: 1; border: 0; background: transparent; border-radius: 999px; padding: 9px 0; color: var(--label-2); font-weight: 600; font-size: 15px; }
+/* 分段控件：iOS 实色轨道 + 白色（暗色为灰色）滑块 */
+.tabs { display: flex; border-radius: 999px; padding: 3px; margin-bottom: 20px; background: var(--fill); }
+.tab { flex: 1; border: 0; background: transparent; border-radius: 999px; padding: 8px 0; color: var(--label); font-weight: 500; font-size: 15px; }
 .tab.is-active {
   background: var(--seg-thumb);
-  color: var(--label);
-  box-shadow: inset 0 1px 0 var(--glass-hi), 0 2px 10px rgba(0, 0, 0, .10);
+  font-weight: 600;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, .12), 0 3px 1px rgba(0, 0, 0, .04);
 }
 
 .form { display: grid; gap: 14px; }
@@ -221,20 +221,21 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .field > span { font-size: 13px; font-weight: 500; color: var(--label-2); padding-left: 16px; }
 .field input {
   width: 100%;
-  border-radius: 999px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--surface);
   color: var(--label);
-  padding: 13px 18px;
+  padding: 13px 16px;
   font: inherit;
   font-size: 17px;
   outline: none;
   transition: box-shadow .2s ease;
 }
 .field input::placeholder { color: var(--label-3); }
-.field input:focus {
-  box-shadow: inset 0 1px 0 var(--glass-hi), 0 0 0 3px color-mix(in srgb, var(--tint) 35%, transparent), var(--glass-shadow);
-}
+.field input:focus { box-shadow: 0 0 0 3px color-mix(in srgb, var(--tint) 35%, transparent); }
 .field-row { display: flex; gap: 8px; }
 .field-row input { flex: 1; min-width: 0; }
+.field-row .btn-tonal { border-radius: 14px; }
 .form .btn-primary { margin-top: 8px; }
 .login-msg { min-height: 1.5em; margin: 16px 0 0; text-align: center; font-size: 14px; color: var(--red); }
 .login-msg.ok { color: var(--tint); }
@@ -254,7 +255,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   inset: 0 -16px -18px;
   z-index: -1;
   pointer-events: none;
-  background: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 75%, transparent), transparent);
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 80%, transparent), transparent);
   -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
   -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent);
@@ -268,24 +269,24 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .avatar-btn { width: 44px; height: 44px; padding: 3px; border-radius: 50%; overflow: hidden; flex: none; }
 .avatar-btn img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
 
-.qr-card { border-radius: 32px; padding: 14px 14px 12px; margin-top: 2px; }
-/* 二维码底板：不透明，颜色与画布一致（亮色白 / 暗色黑），不受玻璃模糊影响 */
+/* 二维码卡片：实色卡片 */
+.qr-card { background: var(--surface); border-radius: 28px; padding: 14px 14px 12px; margin-top: 2px; }
+/* 二维码底板：不透明，颜色与画布一致（亮色白 / 暗色黑） */
 .qr-box {
   position: relative;
   width: 100%; max-width: 380px; margin: 0 auto; aspect-ratio: 1;
   background: #ffffff;
-  border-radius: 22px;
+  border-radius: 20px;
   padding: 10px;
-  box-shadow: inset 0 0 0 .5px rgba(0, 0, 0, .06);
 }
 .qr-box canvas { width: 100%; height: 100%; display: block; image-rendering: pixelated; }
 .qr-box.is-stale canvas { opacity: .35; }
 .qr-placeholder {
   position: absolute; inset: 0;
   display: grid; place-items: center;
-  color: rgba(60, 60, 67, .62); font-size: 14px;
+  color: rgba(60, 60, 67, .6); font-size: 14px;
   background: rgba(255, 255, 255, .8);
-  border-radius: 22px;
+  border-radius: 20px;
 }
 .qr-meta { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 10px; font-size: 14px; color: var(--label-2); }
 .qr-floor { font-weight: 700; color: var(--tint); }
@@ -295,18 +296,21 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .qr-progress > div { height: 100%; width: 100%; background: var(--tint); border-radius: 4px; transform-origin: left; transition: transform 1s linear; }
 
 /* 暗色模式：黑底白码 */
-:root[data-mode="dark"] .qr-box { background: #000000; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08); }
-:root[data-mode="dark"] .qr-placeholder { color: rgba(235, 235, 245, .62); background: rgba(0, 0, 0, .8); }
+:root[data-mode="dark"] .qr-box { background: #000000; }
+:root[data-mode="dark"] .qr-placeholder { color: rgba(235, 235, 245, .6); background: rgba(0, 0, 0, .8); }
 
 .floor-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 24px 4px 12px; }
 .floor-head h2 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -.01em; color: var(--label); }
 .floor-head h2 small { font-size: 13px; font-weight: 400; color: var(--label-2); letter-spacing: 0; }
 
+/* 楼层按钮：实色单元格；当前楼层为实色着色 */
 .floor-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 .floor-tile {
   position: relative;
   aspect-ratio: 1.25;
-  border-radius: 24px;
+  border: 0;
+  border-radius: 20px;
+  background: var(--surface);
   color: var(--label);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   touch-action: manipulation;
@@ -314,21 +318,14 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .floor-tile .name { font-size: 24px; font-weight: 700; line-height: 1.1; letter-spacing: -.02em; }
 .floor-tile .badge { font-size: 11px; font-weight: 600; margin-top: 3px; color: var(--tint); }
-/* 已授权（全部楼层模式）：淡淡的着色玻璃 */
-.floor-tile.is-auth { background: color-mix(in srgb, var(--tint) 16%, var(--glass)); }
-/* 当前楼层：着色玻璃 + 高光 + 光晕 */
-.floor-tile.is-selected {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--tint) 80%, #ffffff), var(--tint));
-  border-color: color-mix(in srgb, var(--tint) 60%, #ffffff);
-  color: var(--on-tint);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5), inset 0 -1px 0 rgba(0, 0, 0, .12), 0 10px 26px color-mix(in srgb, var(--tint) 40%, transparent);
-}
+.floor-tile.is-auth { background: color-mix(in srgb, var(--tint) 14%, var(--surface)); }
+.floor-tile.is-selected { background: var(--tint); color: var(--on-tint); }
 .floor-tile.is-selected::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; margin-top: 5px; }
 .floor-empty { text-align: center; color: var(--label-2); font-size: 14px; margin-top: 18px; }
 
-/* ---------- sheets：悬浮的圆角玻璃面板 ---------- */
+/* ---------- sheets：实色圆角面板（与 iOS 系统面板一致，不加玻璃） ---------- */
 .sheet {
-  border: 1px solid var(--glass-rim);
+  border: 0;
   padding: 16px 16px calc(env(safe-area-inset-bottom) + 20px);
   overflow-x: hidden;
   overflow-y: auto;
@@ -336,16 +333,14 @@ button { font: inherit; color: inherit; cursor: pointer; }
   width: calc(100% - 16px);
   max-width: 520px;
   margin: auto auto 8px;
-  border-radius: 34px;
+  border-radius: 38px;
   background: var(--sheet-bg);
-  -webkit-backdrop-filter: blur(30px) saturate(180%);
-  backdrop-filter: blur(30px) saturate(180%);
-  box-shadow: inset 0 1px 0 var(--glass-hi), 0 20px 60px rgba(0, 0, 0, .25);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .2);
   color: var(--label);
   max-height: 88vh;
 }
 /* iOS 式弹出：从屏幕底部滑上来，关闭时滑回去；遮罩淡入淡出 */
-.sheet::backdrop { background: rgba(0, 0, 0, .25); animation: sheet-fade-in .3s ease both; }
+.sheet::backdrop { background: rgba(0, 0, 0, .3); animation: sheet-fade-in .3s ease both; }
 .sheet[open] { animation: sheet-in .45s cubic-bezier(.32, .72, 0, 1) both; }
 .sheet.is-closing { animation: sheet-out .3s cubic-bezier(.32, .72, 0, 1) both; }
 .sheet.is-closing::backdrop { animation: sheet-fade-out .3s ease both; }
@@ -383,15 +378,15 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .sheet-close svg { width: 20px; height: 20px; }
 
 .profile-head { display: flex; align-items: center; gap: 14px; padding: 0 4px; }
-.profile-avatar { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 1px var(--glass-rim), 0 6px 18px rgba(0, 0, 0, .12); }
+.profile-avatar { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 .5px var(--separator); }
 .profile-name { font-size: 22px; font-weight: 700; letter-spacing: -.01em; }
 .profile-phone, .profile-building { font-size: 14px; color: var(--label-2); }
 
-/* 分组列表（inset grouped） */
-.settings { margin-top: 20px; border-radius: 22px; padding: 0 16px; }
+/* 分组列表（inset grouped）：实色单元格 + 细分隔线 */
+.settings { margin-top: 20px; border-radius: 26px; padding: 0 16px; background: var(--sheet-cell); }
 .setting { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 0; }
 .setting + .setting { border-top: .5px solid var(--separator); }
-.setting b { display: block; font-weight: 500; font-size: 17px; }
+.setting b { display: block; font-weight: 400; font-size: 17px; }
 .setting small { display: block; color: var(--label-2); font-size: 13px; }
 
 /* iOS 开关 */
@@ -417,8 +412,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .switch:checked { background: var(--green); }
 .switch:checked::after { transform: translateX(20px); }
 
-.debug-list { flex: 1; overflow: auto; margin-top: 12px; font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-.log { border-radius: 16px; padding: 9px 12px; margin-bottom: 8px; box-shadow: inset 0 1px 0 var(--glass-hi); }
+.debug-list { flex: 1; overflow: auto; font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.log { background: var(--sheet-cell); border-radius: 14px; padding: 9px 12px; margin-bottom: 8px; }
 .log summary { cursor: pointer; display: flex; gap: 8px; align-items: baseline; list-style: none; }
 .log summary::-webkit-details-marker { display: none; }
 .log .st { font-weight: 700; }
@@ -429,7 +424,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .log pre { white-space: pre-wrap; word-break: break-all; margin: 6px 0 0; padding: 6px 8px; background: var(--fill); border-radius: 10px; }
 .log.event { color: var(--label-2); }
 
-/* ---------- toast：底部玻璃胶囊 ---------- */
+/* ---------- toast：底部浮动玻璃胶囊 ---------- */
 .toast {
   position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 28px);
   transform: translate(-50%, 24px) scale(.96);
@@ -450,8 +445,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 /* 浏览器不支持 backdrop-filter 时退化为更不透明的底色，保证可读 */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  :root { --glass: rgba(255, 255, 255, .9); --glass-strong: rgba(255, 255, 255, .96); }
-  :root[data-mode="dark"] { --glass: rgba(44, 44, 48, .92); --glass-strong: rgba(30, 30, 34, .97); }
+  :root { --glass: rgba(255, 255, 255, .92); --glass-strong: rgba(255, 255, 255, .96); --sheet-btn: #ffffff; }
+  :root[data-mode="dark"] { --glass: rgba(44, 44, 48, .94); --glass-strong: rgba(36, 36, 40, .97); --sheet-btn: #3a3a3c; }
 }
 /* 用户开启“减弱动态效果”时去掉弹性动画 */
 @media (prefers-reduced-motion: reduce) {
