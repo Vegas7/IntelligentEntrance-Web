@@ -124,8 +124,13 @@
 
   <!-- ================= 个人中心 ================= -->
   <dialog id="sheet-profile" class="sheet">
-    <button type="button" class="sheet-close" data-close data-i18n-aria="common.close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 2.5l9 9M11.5 2.5l-9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
-    <div class="profile-head" tabindex="-1" autofocus>
+    <div class="sheet-header">
+      <h2 class="sheet-title" tabindex="-1" autofocus data-i18n="pass.profile">个人中心</h2>
+      <div class="sheet-actions">
+        <button type="button" class="sheet-btn sheet-close" data-close data-i18n-aria="common.close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+      </div>
+    </div>
+    <div class="profile-head">
       <img class="profile-avatar" src="ghost.svg?v=3" alt="">
       <div>
         <div id="profile-name" class="profile-name"></div>
@@ -147,12 +152,12 @@
 
   <!-- ================= 调试日志 ================= -->
   <dialog id="sheet-debug" class="sheet sheet-tall">
-    <button type="button" class="sheet-close" data-close data-i18n-aria="common.close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 2.5l9 9M11.5 2.5l-9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
-    <div class="debug-head">
-      <h2 data-i18n="debug.title">网络与事件日志</h2>
-      <div class="debug-actions">
-        <button id="btn-log-export" class="chip" data-i18n="debug.export">导出</button>
-        <button id="btn-log-clear" class="chip" data-i18n="debug.clear">清空</button>
+    <div class="sheet-header">
+      <h2 class="sheet-title" tabindex="-1" autofocus data-i18n="debug.title">调试日志</h2>
+      <div class="sheet-actions">
+        <button id="btn-log-export" type="button" class="sheet-btn" data-i18n="debug.export">导出</button>
+        <button id="btn-log-clear" type="button" class="sheet-btn" data-i18n="debug.clear">清空</button>
+        <button type="button" class="sheet-btn sheet-close" data-close data-i18n-aria="common.close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
       </div>
     </div>
     <div id="debug-list" class="debug-list"></div>

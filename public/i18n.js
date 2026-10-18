@@ -64,7 +64,7 @@ window.IE_I18N = {
     'profile.logout': '退出登录 / 切换账号',
     'profile.logoutConfirm': '确定退出登录？',
 
-    'debug.title': '网络与事件日志',
+    'debug.title': '调试日志',
     'debug.export': '导出',
     'debug.clear': '清空',
     'debug.empty': '暂无日志',
@@ -138,7 +138,7 @@ window.IE_I18N = {
     'profile.logout': 'Log out / Switch account',
     'profile.logoutConfirm': 'Log out?',
 
-    'debug.title': 'Network & event log',
+    'debug.title': 'Debug log',
     'debug.export': 'Export',
     'debug.clear': 'Clear',
     'debug.empty': 'No logs yet',
