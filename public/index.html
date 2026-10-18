@@ -27,6 +27,8 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- iOS 26 主屏幕 Web App 顶部模糊的规避层（见 style.css .edge-guard） -->
+  <div class="edge-guard" aria-hidden="true"></div>
   <!-- 语言 / 主题切换按钮模板，登录页与通行页各放一组 -->
   <template id="tpl-prefs">
     <button type="button" class="icon-btn js-lang" data-i18n-aria="ui.lang">
