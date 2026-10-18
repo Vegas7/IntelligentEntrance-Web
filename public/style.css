@@ -1,14 +1,10 @@
 /* =====================================================================
    Liquid Glass 风格（参考 iOS 26）
    - 玻璃材质：半透明 + 背景模糊/增饱和 + 高光描边 + 柔和投影
-   - 背后铺一层柔和的环境色，让玻璃有东西可“折射”
    - 二维码本身始终放在不透明底板上（亮色白底黑码 / 暗色黑底白码），保证扫码
    ===================================================================== */
 :root {
   --bg: #f2f2f7;
-  --ambient-1: rgba(90, 160, 255, .58);
-  --ambient-2: rgba(175, 130, 255, .42);
-  --ambient-3: rgba(80, 220, 200, .36);
 
   --label: #000000;
   --label-2: rgba(60, 60, 67, .62);
@@ -26,6 +22,7 @@
   --glass-edge: rgba(0, 0, 0, .06);
   --glass-hi: rgba(255, 255, 255, .95);
   --rim-hi: rgba(255, 255, 255, .95);
+  --sheet-bg: rgba(248, 248, 250, .92);
   --seg-thumb: rgba(255, 255, 255, .9);
   --glass-shadow: 0 10px 30px rgba(20, 30, 60, .10), 0 1px 3px rgba(20, 30, 60, .06);
   --blur: blur(22px) saturate(180%);
@@ -37,9 +34,6 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #000000;
-    --ambient-1: rgba(40, 100, 255, .42);
-    --ambient-2: rgba(140, 70, 255, .32);
-    --ambient-3: rgba(0, 170, 150, .24);
     --label: #ffffff;
     --label-2: rgba(235, 235, 245, .62);
     --label-3: rgba(235, 235, 245, .30);
@@ -54,6 +48,7 @@
     --glass-edge: rgba(0, 0, 0, .5);
     --glass-hi: rgba(255, 255, 255, .22);
     --rim-hi: rgba(255, 255, 255, .42);
+    --sheet-bg: rgba(28, 28, 30, .92);
     --seg-thumb: rgba(255, 255, 255, .2);
     --glass-shadow: 0 10px 30px rgba(0, 0, 0, .45), 0 1px 3px rgba(0, 0, 0, .3);
     color-scheme: dark;
@@ -61,9 +56,6 @@
 }
 :root[data-theme="dark"] {
   --bg: #000000;
-  --ambient-1: rgba(40, 100, 255, .42);
-  --ambient-2: rgba(140, 70, 255, .32);
-  --ambient-3: rgba(0, 170, 150, .24);
   --label: #ffffff;
   --label-2: rgba(235, 235, 245, .62);
   --label-3: rgba(235, 235, 245, .30);
@@ -78,6 +70,7 @@
   --glass-edge: rgba(0, 0, 0, .5);
   --glass-hi: rgba(255, 255, 255, .22);
   --rim-hi: rgba(255, 255, 255, .42);
+  --sheet-bg: rgba(28, 28, 30, .92);
   --seg-thumb: rgba(255, 255, 255, .2);
   --glass-shadow: 0 10px 30px rgba(0, 0, 0, .45), 0 1px 3px rgba(0, 0, 0, .3);
   color-scheme: dark;
@@ -93,18 +86,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
   -webkit-text-size-adjust: 100%;
-}
-/* 环境色：固定在背后的柔和光斑，玻璃元素透过它产生色彩 */
-body::before {
-  content: "";
-  position: fixed;
-  inset: -20vmax;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    radial-gradient(38vmax 38vmax at 18% 12%, var(--ambient-1), transparent 70%),
-    radial-gradient(34vmax 34vmax at 92% 30%, var(--ambient-2), transparent 70%),
-    radial-gradient(40vmax 40vmax at 40% 95%, var(--ambient-3), transparent 70%);
 }
 button { font: inherit; color: inherit; cursor: pointer; }
 [hidden] { display: none !important; }
@@ -140,7 +121,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* 镜面高光边：左上、右下更亮的渐变描边，模拟玻璃边缘的折射高光 */
 .glass-group, .avatar-btn, .qr-card, .chip, .floor-tile, .tabs, .settings, .btn-glass, .btn-tonal { position: relative; }
 .glass-group::before, .avatar-btn::before, .qr-card::before, .chip::before, .floor-tile::before,
-.tabs::before, .settings::before, .btn-glass::before, .btn-tonal::before, .sheet::before {
+.tabs::before, .settings::before, .btn-glass::before, .btn-tonal::before {
   content: "";
   position: absolute;
   inset: -1px;
@@ -181,7 +162,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .btn-tonal { width: auto; white-space: nowrap; font-size: 15px; padding: 0 16px; color: var(--tint); }
 .btn-glass { color: var(--red); margin-top: 18px; }
-.btn-text { background: transparent; color: var(--tint); margin-top: 6px; font-weight: 500; }
 
 .icon-btn {
   width: 40px; height: 40px;
@@ -346,26 +326,47 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* ---------- sheets：悬浮的圆角玻璃面板 ---------- */
 .sheet {
   border: 1px solid var(--glass-rim);
-  padding: 10px 20px calc(env(safe-area-inset-bottom) + 18px);
+  padding: 22px 20px calc(env(safe-area-inset-bottom) + 20px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   width: calc(100% - 16px);
   max-width: 520px;
   margin: auto auto 8px;
   border-radius: 34px;
-  background: var(--glass-strong);
+  background: var(--sheet-bg);
   -webkit-backdrop-filter: blur(30px) saturate(180%);
   backdrop-filter: blur(30px) saturate(180%);
   box-shadow: inset 0 1px 0 var(--glass-hi), 0 20px 60px rgba(0, 0, 0, .25);
   color: var(--label);
   max-height: 88vh;
 }
-.sheet::backdrop { background: rgba(0, 0, 0, .22); }
-.sheet[open] { animation: up .32s cubic-bezier(.2, .9, .3, 1.15); }
-@keyframes up { from { transform: translateY(60px) scale(.98); opacity: 0; } }
-.sheet-handle { width: 36px; height: 5px; border-radius: 5px; background: var(--label-3); margin: 0 auto 16px; }
+/* iOS 式弹出：从屏幕底部滑上来，关闭时滑回去；遮罩淡入淡出 */
+.sheet::backdrop { background: rgba(0, 0, 0, .25); animation: sheet-fade-in .3s ease both; }
+.sheet[open] { animation: sheet-in .45s cubic-bezier(.32, .72, 0, 1) both; }
+.sheet.is-closing { animation: sheet-out .3s cubic-bezier(.32, .72, 0, 1) both; }
+.sheet.is-closing::backdrop { animation: sheet-fade-out .3s ease both; }
+@keyframes sheet-in { from { transform: translateY(calc(100% + 16px)); } to { transform: none; } }
+@keyframes sheet-out { from { transform: none; } to { transform: translateY(calc(100% + 16px)); } }
+@keyframes sheet-fade-in { from { opacity: 0; } }
+@keyframes sheet-fade-out { to { opacity: 0; } }
+
+/* 右上角圆形关闭按钮（玻璃圆钮 + ×） */
+.sheet-close {
+  position: absolute; top: 14px; right: 14px; z-index: 1;
+  width: 32px; height: 32px; padding: 0;
+  display: grid; place-items: center;
+  border: 0; border-radius: 50%;
+  background: var(--fill);
+  color: var(--label-2);
+  transition: transform .18s cubic-bezier(.3, .7, .4, 1.4), filter .2s ease;
+}
+.sheet-close svg { width: 14px; height: 14px; }
+.sheet-close:active { transform: scale(.9); filter: brightness(1.1); }
 .sheet-tall { height: 86vh; display: none; flex-direction: column; }
 .sheet-tall[open] { display: flex; }
 
-.profile-head { display: flex; align-items: center; gap: 14px; padding: 4px 4px 0; outline: none; }
+.profile-head { display: flex; align-items: center; gap: 14px; padding: 4px 44px 0 4px; outline: none; }
 .profile-avatar { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 1px var(--glass-rim), 0 6px 18px rgba(0, 0, 0, .12); }
 .profile-name { font-size: 22px; font-weight: 700; letter-spacing: -.01em; }
 .profile-phone, .profile-building { font-size: 14px; color: var(--label-2); }
@@ -400,7 +401,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .switch:checked { background: var(--green); }
 .switch:checked::after { transform: translateX(20px); }
 
-.debug-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.debug-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; padding-right: 44px; min-height: 32px; }
 .debug-head h2 { margin: 0; font-size: 20px; font-weight: 700; }
 .debug-actions { display: flex; gap: 6px; }
 .debug-list { flex: 1; overflow: auto; margin-top: 12px; font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }

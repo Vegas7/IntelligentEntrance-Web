@@ -659,13 +659,36 @@
     if (typeof d.showModal === 'function') d.showModal();
     else d.setAttribute('open', '');
   }
+  // 关闭时先播放向下滑出的动画，结束后再真正关闭（减弱动态效果时直接关闭）
   function closeSheet(d) {
-    if (typeof d.close === 'function') d.close();
-    else d.removeAttribute('open');
+    if (!d.open || d.classList.contains('is-closing')) return;
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      d.classList.remove('is-closing');
+      if (typeof d.close === 'function') d.close();
+      else d.removeAttribute('open');
+    };
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return finish();
+    d.classList.add('is-closing');
+    d.addEventListener('animationend', (e) => { if (e.target === d) finish(); }, { once: true });
+    setTimeout(finish, 400); // 兜底：动画事件未触发时也能关闭
   }
   document.querySelectorAll('dialog').forEach((d) => {
     d.addEventListener('click', (e) => {
-      if (e.target === d || e.target.closest('[data-close]')) closeSheet(d);
+      if (e.target.closest('[data-close]')) return closeSheet(d);
+      // 只有点在面板外（遮罩上）才关闭；点面板自身的空白处不关闭
+      if (e.target === d) {
+        const r = d.getBoundingClientRect();
+        const inside = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+        if (!inside) closeSheet(d);
+      }
+    });
+    // Esc 键同样走滑出动画
+    d.addEventListener('cancel', (e) => {
+      e.preventDefault();
+      closeSheet(d);
     });
   });
 

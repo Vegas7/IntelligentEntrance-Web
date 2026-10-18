@@ -124,7 +124,7 @@
 
   <!-- ================= 个人中心 ================= -->
   <dialog id="sheet-profile" class="sheet">
-    <div class="sheet-handle"></div>
+    <button type="button" class="sheet-close" data-close data-i18n-aria="common.close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 2.5l9 9M11.5 2.5l-9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
     <div class="profile-head" tabindex="-1" autofocus>
       <img class="profile-avatar" src="ghost.svg?v=3" alt="">
       <div>
@@ -143,18 +143,16 @@
       </label>
     </div>
     <button id="btn-logout" class="btn btn-glass" data-i18n="profile.logout">退出登录 / 切换账号</button>
-    <button class="btn btn-text" data-close data-i18n="common.close">关闭</button>
   </dialog>
 
   <!-- ================= 调试日志 ================= -->
   <dialog id="sheet-debug" class="sheet sheet-tall">
-    <div class="sheet-handle"></div>
+    <button type="button" class="sheet-close" data-close data-i18n-aria="common.close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 2.5l9 9M11.5 2.5l-9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
     <div class="debug-head">
       <h2 data-i18n="debug.title">网络与事件日志</h2>
       <div class="debug-actions">
         <button id="btn-log-export" class="chip" data-i18n="debug.export">导出</button>
         <button id="btn-log-clear" class="chip" data-i18n="debug.clear">清空</button>
-        <button class="chip" data-close data-i18n="common.close">关闭</button>
       </div>
     </div>
     <div id="debug-list" class="debug-list"></div>
