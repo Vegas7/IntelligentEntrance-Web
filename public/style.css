@@ -243,23 +243,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 /* ---------- pass ---------- */
 .topbar {
-  position: sticky; top: 0; z-index: 5;
+  position: relative;
   display: flex; align-items: center; gap: 8px;
   padding: calc(env(safe-area-inset-top) + 8px) 0 10px;
   margin-top: calc(-1 * env(safe-area-inset-top));
-}
-/* 滚动边缘效果：内容滚到大标题下方时逐渐模糊淡出，而不是直接重叠 */
-.topbar::before {
-  content: "";
-  position: absolute;
-  inset: 0 -16px -18px;
-  z-index: -1;
-  pointer-events: none;
-  background: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 80%, transparent), transparent);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
-  -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent);
-  mask-image: linear-gradient(to bottom, #000 60%, transparent);
 }
 .topbar-title {
   flex: 1; margin: 0;
@@ -292,6 +279,18 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .qr-floor { font-weight: 700; color: var(--tint); }
 .qr-floor:not(:empty)::after { content: "·"; margin-left: 6px; color: var(--label-3); font-weight: 400; }
 .qr-countdown { font-variant-numeric: tabular-nums; }
+
+/* 楼层标签滚动切换：新旧两层叠在同一格内，旧的滚出、新的滚入（裁剪在一行高度内） */
+.roll { display: inline-grid; overflow: hidden; vertical-align: bottom; }
+.roll > span { grid-area: 1 / 1; }
+.roll-up .roll-old { animation: roll-out-up .32s cubic-bezier(.5, 0, .75, 0) both; }
+.roll-up .roll-new { animation: roll-in-up .5s cubic-bezier(.34, 1.45, .64, 1) .08s both; }
+.roll-down .roll-old { animation: roll-out-down .32s cubic-bezier(.5, 0, .75, 0) both; }
+.roll-down .roll-new { animation: roll-in-down .5s cubic-bezier(.34, 1.45, .64, 1) .08s both; }
+@keyframes roll-out-up { to { transform: translateY(-110%); opacity: 0; } }
+@keyframes roll-in-up { from { transform: translateY(110%); opacity: 0; } }
+@keyframes roll-out-down { to { transform: translateY(110%); opacity: 0; } }
+@keyframes roll-in-down { from { transform: translateY(-110%); opacity: 0; } }
 .qr-progress { height: 4px; background: var(--fill); border-radius: 4px; overflow: hidden; margin: 8px 18px 2px; }
 .qr-progress > div { height: 100%; width: 100%; background: var(--tint); border-radius: 4px; transform-origin: left; transition: transform 1s linear; }
 

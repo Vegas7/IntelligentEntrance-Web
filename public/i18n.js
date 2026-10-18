@@ -54,7 +54,6 @@ window.IE_I18N = {
     'floors.toAuth': '切换授权楼层',
     'floors.loading': '正在加载楼层…',
     'floors.authorized': '已授权',
-    'floors.selected': '已选 {name}：通行二维码已更新',
     'floors.aria': '{name}，点击选择',
     'floors.ariaCurrent': '{name}，当前楼层',
 
@@ -128,7 +127,6 @@ window.IE_I18N = {
     'floors.toAuth': 'Show my floors',
     'floors.loading': 'Loading floors…',
     'floors.authorized': 'Access',
-    'floors.selected': '{name} selected: QR code updated',
     'floors.aria': '{name}, tap to select',
     'floors.ariaCurrent': '{name}, current floor',
 

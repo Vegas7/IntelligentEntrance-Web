@@ -429,8 +429,45 @@
       els.qrPlaceholder.hidden = false;
       els.qrPlaceholder.textContent = t(state.building ? 'pass.loadingCode' : 'pass.loadingBuilding');
     }
-    const f = findFloor((state.qr && state.qr.floorId) || state.selectedFloorId);
-    els.qrFloor.textContent = f ? f.name : '';
+    setFloorLabel(findFloor(currentFloorId()) || null);
+  }
+
+  // ---------- 楼层标签：切换时像机械翻牌钟一样上下滚动（上楼向上滚，下楼向下滚） ----------
+  let shownFloor = null;
+  const floorRank = (f) => {
+    if (f.num != null) return f.num;
+    const list = state.allFloors.length ? state.allFloors : state.authFloors;
+    return list.findIndex((x) => x.id === f.id);
+  };
+  function setFloorLabel(floor) {
+    const el = els.qrFloor;
+    const prev = shownFloor;
+    shownFloor = floor;
+    if (!floor) { el.textContent = ''; return; }
+    if (prev && prev.id === floor.id) {
+      // 同一楼层：动画进行中则保持，否则确保文字正确
+      if (!el.querySelector('.roll') && el.textContent !== floor.name) el.textContent = floor.name;
+      return;
+    }
+    const dir = prev ? Math.sign(floorRank(floor) - floorRank(prev)) : 0;
+    if (!dir || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      el.textContent = floor.name;
+      return;
+    }
+    const roll = document.createElement('span');
+    roll.className = 'roll ' + (dir > 0 ? 'roll-up' : 'roll-down');
+    const oldEl = document.createElement('span');
+    oldEl.className = 'roll-old';
+    oldEl.textContent = prev.name;
+    const newEl = document.createElement('span');
+    newEl.className = 'roll-new';
+    newEl.textContent = floor.name;
+    roll.append(oldEl, newEl);
+    el.replaceChildren(roll);
+    // 动画结束后换回纯文本；若期间又切换了楼层，旧动画的收尾直接跳过
+    const done = () => { if (roll.isConnected) el.textContent = floor.name; };
+    newEl.addEventListener('animationend', done, { once: true });
+    setTimeout(done, 700);
   }
 
   const canFetchQr = () => !!(state.building && currentFloorId());
@@ -628,9 +665,8 @@
     store.set('selectedFloorId', floor.id);
     logEvent('Pass', `选中楼层: ${floor.name} (${floor.id})`);
     renderFloors();
-    els.qrFloor.textContent = floor.name;
+    setFloorLabel(floor); // 楼层标签上下滚动切换
     startQrLoop(); // 立即生成该楼层的二维码并重置倒计时
-    toast(t('floors.selected', { name: floor.name }));
 
     const buildingId = state.building.id;
     api('user/modify_default_floor', { buildingId, buildingFloorId: floor.id })
