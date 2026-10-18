@@ -109,7 +109,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* ---------- language / theme toggles ---------- */
 .js-prefs { display: flex; gap: 2px; }
 .login-prefs { justify-content: flex-end; padding-top: 8px; }
-.lang-label { font-size: 14px; font-weight: 700; letter-spacing: .02em; }
 /* 暗色时显示太阳（切到亮色），亮色时显示月亮（切到暗色）；data-mode 由 app.js 维护 */
 .ic-sun { display: none; }
 :root[data-mode="dark"] .ic-sun { display: block; }

@@ -29,7 +29,10 @@
 <body>
   <!-- 语言 / 主题切换按钮模板，登录页与通行页各放一组 -->
   <template id="tpl-prefs">
-    <button type="button" class="icon-btn js-lang" data-i18n-aria="ui.lang"><span class="lang-label"></span></button>
+    <button type="button" class="icon-btn js-lang" data-i18n-aria="ui.lang">
+      <!-- 「文A」语言图标：左上「文」、右下「A」，用线条绘制，不依赖字体 -->
+      <svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 2.3v1.9M2.6 5.2h9.8M10.6 5.2c-1 4.2-3.6 7.2-7.6 8.8M4.6 5.2c1 4 3.3 6.8 6.6 8.3"/><path d="M12.8 21.5 17.2 10.6l4.4 10.9M14.4 17.6h5.6"/></g></svg>
+    </button>
     <button type="button" class="icon-btn js-theme" data-i18n-aria="ui.theme">
       <svg class="ic-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
       <svg class="ic-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.5 1.5M17.2 17.2l1.5 1.5M5.3 18.7l1.5-1.5M17.2 6.8l1.5-1.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>

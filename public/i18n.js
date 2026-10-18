@@ -4,7 +4,6 @@ window.IE_I18N = {
     'app.title': '智能通行',
     'title.building': '{name} · 智能通行',
     'ui.lang': '切换语言',
-    'ui.langShort': 'EN',
     'ui.theme': '切换亮色 / 暗色',
     'common.close': '关闭',
 
@@ -79,7 +78,6 @@ window.IE_I18N = {
     'app.title': 'Smart Pass',
     'title.building': '{name} · Smart Pass',
     'ui.lang': 'Switch language',
-    'ui.langShort': '中',
     'ui.theme': 'Toggle light / dark',
     'common.close': 'Close',
 

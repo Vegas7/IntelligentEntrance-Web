@@ -84,7 +84,6 @@
       el.setAttribute('aria-label', s);
       if (el.tagName === 'BUTTON') el.title = s;
     });
-    document.querySelectorAll('.lang-label').forEach((el) => { el.textContent = t('ui.langShort'); });
   }
 
   function setLanguage(next) {
