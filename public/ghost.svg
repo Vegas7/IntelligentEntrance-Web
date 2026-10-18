@@ -1,6 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="2 -8 696 696">
-  <rect x="2" y="-8" width="696" height="696" fill="#f3f5f9"/>
-  <ellipse cx="365" cy="582" rx="185" ry="22" fill="#d6d8dc"/>
+  <ellipse cx="365" cy="582" rx="185" ry="22" fill="#787880" fill-opacity=".3"/>
   <g stroke="#111111" stroke-width="15" stroke-linecap="round" stroke-linejoin="round">
     <path d="M168 284 C128 282 98 302 101 330 C104 356 136 370 172 372" fill="#ffffff"/>
     <path d="M213 522 C190 500 172 450 168 380 C162 270 175 170 245 120 C300 82 390 90 430 140 C470 190 478 280 495 360 C512 440 550 480 598 508 C560 525 500 528 455 520 C420 512 400 498 380 505 C355 515 345 532 320 530 C295 528 280 500 255 498 C235 497 230 528 213 522 Z" fill="#ffffff" stroke="none"/>
