@@ -680,6 +680,8 @@
   els.btnMode.addEventListener('click', () => {
     state.allMode = !state.allMode;
     renderFloors();
+    // 切换列表后回到顶部，避免短列表停在长列表的滚动位置而“藏”到上方
+    document.querySelector('.floor-scroll').scrollTop = 0;
   });
 
   // ================= 个人中心 =================
