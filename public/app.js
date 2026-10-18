@@ -106,7 +106,7 @@
   function applyTheme() {
     const mode = effectiveTheme();
     document.documentElement.dataset.mode = mode;
-    $('meta-theme').setAttribute('content', mode === 'dark' ? '#111318' : '#f6f7fb');
+    $('meta-theme').setAttribute('content', mode === 'dark' ? '#000000' : '#f2f2f7');
     // 切换主题后按新配色重绘当前二维码
     if (state.qr && state.qr.code && !els.viewPass.hidden) drawQr(state.qr.code);
   }

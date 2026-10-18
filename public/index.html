@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta id="meta-theme" name="theme-color" content="#f6f7fb">
+  <meta id="meta-theme" name="theme-color" content="#f2f2f7">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="智能通行">
@@ -41,7 +41,7 @@
 
   <!-- ================= 登录 ================= -->
   <main id="view-login" class="view" hidden>
-    <div class="login-prefs js-prefs"></div>
+    <div class="login-prefs"><div class="glass-group js-prefs"></div></div>
     <div class="login-wrap">
       <img class="login-logo" src="icon.svg" alt="">
       <h1 class="login-title" data-i18n="app.title">智能通行</h1>
@@ -88,10 +88,12 @@
   <main id="view-pass" class="view" hidden>
     <header class="topbar">
       <h1 id="building-name" class="topbar-title">智能通行</h1>
-      <div class="topbar-prefs js-prefs"></div>
-      <button id="btn-debug" class="icon-btn" data-i18n-aria="pass.debug">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8M9 4v3.5L4.5 17a2 2 0 0 0 1.8 3h11.4a2 2 0 0 0 1.8-3L15 7.5V4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.5 14h9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-      </button>
+      <div class="glass-group">
+        <div class="js-prefs"></div>
+        <button id="btn-debug" class="icon-btn" data-i18n-aria="pass.debug">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8M9 4v3.5L4.5 17a2 2 0 0 0 1.8 3h11.4a2 2 0 0 0 1.8-3L15 7.5V4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.5 14h9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+      </div>
       <button id="btn-profile" class="avatar-btn" data-i18n-aria="pass.profile">
         <img src="ghost.svg?v=3" alt="">
       </button>
@@ -123,7 +125,7 @@
   <!-- ================= 个人中心 ================= -->
   <dialog id="sheet-profile" class="sheet">
     <div class="sheet-handle"></div>
-    <div class="profile-head">
+    <div class="profile-head" tabindex="-1" autofocus>
       <img class="profile-avatar" src="ghost.svg?v=3" alt="">
       <div>
         <div id="profile-name" class="profile-name"></div>
@@ -140,7 +142,7 @@
         <input id="set-wakelock" type="checkbox" class="switch">
       </label>
     </div>
-    <button id="btn-logout" class="btn btn-danger" data-i18n="profile.logout">退出登录 / 切换账号</button>
+    <button id="btn-logout" class="btn btn-glass" data-i18n="profile.logout">退出登录 / 切换账号</button>
     <button class="btn btn-text" data-close data-i18n="common.close">关闭</button>
   </dialog>
 
