@@ -4,7 +4,7 @@
      顶部工具按钮组、头像按钮、面板标题栏按钮、登录页切换按钮、toast
    - 内容层使用 iOS 系统的实色分组样式（不加玻璃、描边和光晕）：
      弹出面板本身、列表分组、二维码卡片、楼层按钮、输入框、分段控件
-   - 二维码始终放在不透明底板上（亮色白底黑码 / 暗色黑底白码），保证扫码
+   - 二维码始终放在不透明白色底板上（白底黑码，暗色模式也一样），保证闸机能扫
    ===================================================================== */
 :root {
   /* iOS 系统色（浅色） */
@@ -330,9 +330,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .qr-progress { height: 4px; background: var(--fill); border-radius: 4px; overflow: hidden; margin: 8px 18px 2px; }
 .qr-progress > div { height: 100%; width: 100%; background: var(--tint); border-radius: 4px; transform-origin: left; transition: transform 1s linear; }
 
-/* 暗色模式：黑底白码 */
-:root[data-mode="dark"] .qr-box { background: #000000; }
-:root[data-mode="dark"] .qr-placeholder { color: rgba(235, 235, 245, .6); background: rgba(0, 0, 0, .8); }
 
 .floor-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 24px 4px 12px; }
 .floor-head h2 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -.01em; color: var(--label); }

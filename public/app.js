@@ -107,8 +107,6 @@
     const mode = effectiveTheme();
     document.documentElement.dataset.mode = mode;
     $('meta-theme').setAttribute('content', mode === 'dark' ? '#000000' : '#f2f2f7');
-    // 切换主题后按新配色重绘当前二维码
-    if (state.qr && state.qr.code && !els.viewPass.hidden) drawQr(state.qr.code);
   }
   if (darkMq.addEventListener) darkMq.addEventListener('change', applyTheme);
 
@@ -406,11 +404,10 @@
     c.width = size;
     c.height = size;
     const ctx = c.getContext('2d');
-    // 亮色：白底黑码；暗色：黑底白码（反色二维码）
-    const dark = document.documentElement.dataset.mode === 'dark';
-    ctx.fillStyle = dark ? '#000000' : '#ffffff';
+    // 始终白底黑码：闸机 / 梯控扫码器无法识别反色（黑底白码）二维码，已实测
+    ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, size, size);
-    ctx.fillStyle = dark ? '#ffffff' : '#000000';
+    ctx.fillStyle = '#000000';
     for (let r = 0; r < n; r++) {
       for (let col = 0; col < n; col++) {
         if (qr.isDark(r, col)) ctx.fillRect((col + quiet) * scale, (r + quiet) * scale, scale, scale);
