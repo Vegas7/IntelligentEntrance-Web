@@ -97,6 +97,7 @@
     renderCountdown();
     renderFloors();
     renderProfile();
+    renderWakeStatus();
     if (els.sheetDebug.open) renderLogs();
   }
 
@@ -730,6 +731,7 @@
   $('btn-profile').addEventListener('click', () => {
     renderProfile();
     $('set-wakelock').checked = state.settings.wakeLock;
+    renderWakeStatus();
     openSheet(els.sheetProfile);
   });
 
@@ -772,25 +774,49 @@
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   });
 
-  // ================= 屏幕常亮（Web 无法调节亮度，只做防锁屏） =================
+  // ================= 屏幕常亮（Screen Wake Lock API；Web 无法调节亮度，只做防锁屏） =================
+  // iOS 18.4 起 Safari 与「添加到主屏幕」的 Web App 都支持。iOS 可能要求在用户点击后才授予，
+  // 且切到后台会自动释放，所以：失败时在下一次点击屏幕时重试，释放后回到前台再申请。
   let wakeLock = null;
+  const wakeHeld = () => !!(wakeLock && !wakeLock.released);
   async function requestWakeLock(userInitiated = false) {
-    if (!state.settings.wakeLock || els.viewPass.hidden || document.visibilityState !== 'visible') return;
+    if (!state.settings.wakeLock || els.viewPass.hidden || document.visibilityState !== 'visible') return renderWakeStatus();
     if (!('wakeLock' in navigator)) {
       if (userInitiated) toast(t(window.isSecureContext ? 'wake.unsupported' : 'wake.needHttps'));
-      return;
+      return renderWakeStatus();
     }
+    if (wakeHeld()) return renderWakeStatus();
     try {
-      if (wakeLock && !wakeLock.released) return;
-      wakeLock = await navigator.wakeLock.request('screen');
+      const lock = await navigator.wakeLock.request('screen');
+      wakeLock = lock;
+      lock.addEventListener('release', () => {
+        if (wakeLock === lock) wakeLock = null;
+        renderWakeStatus();
+      });
     } catch (e) {
+      wakeLock = null;
       if (userInitiated) toast(t('wake.failed', { msg: e.message }));
     }
+    renderWakeStatus();
   }
   function releaseWakeLock() {
     if (wakeLock) wakeLock.release().catch(() => {});
     wakeLock = null;
+    renderWakeStatus();
   }
+  // 设置项下方显示实际状态，便于在手机上确认是否生效
+  function renderWakeStatus() {
+    const el = $('wake-status');
+    if (!el) return;
+    let key = 'profile.wakeLockDesc';
+    if (!('wakeLock' in navigator)) key = 'wake.notSupported';
+    else if (state.settings.wakeLock) key = wakeHeld() ? 'wake.active' : 'wake.pending';
+    el.textContent = t(key);
+  }
+  // 未持有锁时，借用户的下一次点击重新申请（满足 iOS 的手势要求）
+  document.addEventListener('pointerup', () => {
+    if (state.settings.wakeLock && !wakeHeld()) requestWakeLock();
+  }, { passive: true });
 
   // ================= 生命周期 =================
   document.addEventListener('visibilitychange', () => {

@@ -59,7 +59,7 @@ window.IE_I18N = {
 
     'profile.defaultName': '通行用户',
     'profile.wakeLock': '保持屏幕常亮',
-    'profile.wakeLockDesc': '停留在通行页时不自动锁屏（需 HTTPS）',
+    'profile.wakeLockDesc': '停留在通行页时不自动锁屏',
     'profile.logout': '退出登录 / 切换账号',
     'profile.logoutConfirm': '确定退出登录？',
 
@@ -71,6 +71,9 @@ window.IE_I18N = {
     'wake.unsupported': '当前浏览器不支持屏幕常亮',
     'wake.needHttps': '屏幕常亮需要通过 HTTPS 访问',
     'wake.failed': '无法保持常亮：{msg}',
+    'wake.active': '已生效：停留在通行页时不会自动锁屏',
+    'wake.pending': '点一下屏幕后生效',
+    'wake.notSupported': '当前浏览器不支持（iOS 需 18.4 及以上）',
   },
 
   en: {
@@ -132,7 +135,7 @@ window.IE_I18N = {
 
     'profile.defaultName': 'User',
     'profile.wakeLock': 'Keep screen on',
-    'profile.wakeLockDesc': 'Stops auto-lock while on the pass page (HTTPS only)',
+    'profile.wakeLockDesc': 'Stops auto-lock while on the pass page',
     'profile.logout': 'Log out / Switch account',
     'profile.logoutConfirm': 'Log out?',
 
@@ -144,5 +147,8 @@ window.IE_I18N = {
     'wake.unsupported': "This browser can't keep the screen on",
     'wake.needHttps': 'Keep screen on requires HTTPS',
     'wake.failed': "Couldn't keep the screen on: {msg}",
+    'wake.active': "On: the screen won't auto-lock on the pass page",
+    'wake.pending': 'Takes effect after you tap the screen',
+    'wake.notSupported': 'Not supported by this browser (iOS 18.4+ required)',
   },
 };
