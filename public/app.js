@@ -753,6 +753,10 @@
   });
 
   // ================= 调试日志 =================
+  // 入口默认隐藏；需要排查问题时在网址后加 ?debug 即可显示（日志始终在内存中记录）
+  try {
+    if (new URLSearchParams(location.search).has('debug')) $('btn-debug').hidden = false;
+  } catch {}
   $('btn-debug').addEventListener('click', () => {
     renderLogs();
     openSheet(els.sheetDebug);
