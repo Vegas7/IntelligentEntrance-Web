@@ -585,6 +585,19 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .qr-meta { margin-top: 8px; }
 }
 
+/* 宽屏竖持（如 iPhone Duo 内屏竖放 669×930）：4 列楼层按钮较宽也较高，压扁并收紧间距，
+   二维码预算相应调整，保证两排楼层完整显示（普通 iPhone 竖屏宽度 < 560，不受影响） */
+@media (orientation: portrait) and (min-width: 560px) {
+  .floor-tile { aspect-ratio: 1.6; border-radius: 18px; }
+  .floor-tile .name { font-size: 22px; }
+  .floor-head { margin: 16px 4px 10px; }
+  .floor-scroll { padding-bottom: calc(env(safe-area-inset-bottom) + 12px); }
+  .qr-box {
+    width: min(100%, 440px, max(200px, 100vh - 430px - var(--sa-v)));
+    width: min(100%, 440px, max(200px, 100dvh - 430px - var(--sa-v)));
+  }
+}
+
 /* 横屏 / 宽而矮的屏幕（如 iPhone Duo 内屏横放 890×626、外屏横放 678×466）：
    顶部栏通栏；左侧二维码卡片按可用高度取尺寸；右侧楼层标题 + 可单独滚动的楼层网格 */
 @media (orientation: landscape) and (min-width: 600px) {

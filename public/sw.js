@@ -1,6 +1,6 @@
 // 离线缓存：页面与静态资源"先用缓存秒开，后台再拉新版本"（stale-while-revalidate）。
 // /api/* 永远走网络，不缓存。修改静态文件后无需改版本号，下次打开即自动更新。
-const CACHE = 'ie-shell-v36';
+const CACHE = 'ie-shell-v37';
 const SHELL = ['./', 'index.html', 'style.css', 'app.js', 'i18n.js', 'vendor/qrcode.js', 'ghost.svg', 'icon.svg', 'icon-dark.svg', 'icon-192.png', 'apple-touch-icon.png', 'manifest.webmanifest'];
 
 self.addEventListener('install', (e) => {
