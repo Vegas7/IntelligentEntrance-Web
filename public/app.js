@@ -878,15 +878,15 @@
   };
   // 透明侧栏在哪一侧：仅主屏幕 App（Safari 里那一列是不透明的浏览器栏）。
   // 竖持：普通 iPhone 左右安全区为 0，大于 40 即为侧栏；
-  // 横持：普通 iPhone 灵动岛一侧也有安全区，所以额外要求宽度不超过 720（Duo 外屏横放 678，普通 iPhone 横放 ≥ 812）。
+  // 横持：普通 iPhone 灵动岛一侧也有安全区（最多约 62px），Duo 的侧栏为 84px（外屏、内屏都是），所以横持阈值取 70。
   function sideColumnSide() {
     if (simSide) return simSide;
     if (!isIPhone || !isStandalone) return null;
     const sa = safeArea();
     const portrait = window.innerHeight > window.innerWidth;
-    if (!portrait && window.innerWidth > 720) return null;
-    if (sa.right >= 40 && sa.right >= sa.left) return 'right';
-    if (sa.left >= 40) return 'left';
+    const minInset = portrait ? 40 : 70;
+    if (sa.right >= minInset && sa.right >= sa.left) return 'right';
+    if (sa.left >= minInset) return 'left';
     return null;
   }
   // 设备向右（顺时针）转 90° 时，外屏摄像头落在侧栏的底部，按钮栏需要向上避让（html.cam-bottom）。
@@ -899,7 +899,8 @@
   }
   function updateSideRail() {
     const side = sideColumnSide();
-    document.documentElement.classList.toggle('cam-bottom', !!side && (simCamBottom || (window.innerWidth > window.innerHeight && rotatedClockwise())));
+    // 只有外屏（横放宽度 ≤ 720）的摄像头在侧栏底部；内屏是屏下摄像头，侧栏底部是空的，不需要避让
+    document.documentElement.classList.toggle('cam-bottom', !!side && (simCamBottom || (window.innerWidth > window.innerHeight && window.innerWidth <= 720 && rotatedClockwise())));
     const gap = screen.width - window.innerWidth;
     const rail = !side && (forceRail || (isIPhone && !isStandalone && gap >= 60 && gap <= 140));
     const root = document.documentElement.classList;
@@ -935,7 +936,7 @@
   }, 1000);
 
   // 诊断：网址加 ?diag 时在页面上显示侧边栏检测用到的各项数值和版本号（用于真机排查）
-  const APP_VERSION = '2026.10.24-v35';
+  const APP_VERSION = '2026.10.24-v36';
   function diagInfo() {
     const vv = window.visualViewport;
     const sa = safeArea();

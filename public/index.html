@@ -56,7 +56,7 @@
         <button class="tab" role="tab" data-tab="sms" data-i18n="login.tabSms">验证码登录</button>
       </div>
 
-      <form id="form-pwd" class="form" autocomplete="on">
+      <form id="form-pwd" class="form" method="post" autocomplete="on">
         <label class="field">
           <span data-i18n="login.phone">手机号</span>
           <input id="pwd-phone" name="username" type="tel" inputmode="numeric" maxlength="11" autocomplete="username" data-i18n-placeholder="login.phonePh" required>
@@ -68,7 +68,7 @@
         <button class="btn btn-primary js-submit" type="submit" data-i18n="login.submit">登录</button>
       </form>
 
-      <form id="form-sms" class="form" autocomplete="on" hidden>
+      <form id="form-sms" class="form" method="post" autocomplete="on" hidden>
         <label class="field">
           <span data-i18n="login.phone">手机号</span>
           <input id="sms-phone" type="tel" inputmode="numeric" maxlength="11" autocomplete="tel" data-i18n-placeholder="login.phonePh" required>
