@@ -116,10 +116,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 
 .view {
-  max-width: 520px;
+  max-width: 640px;
   margin: 0 auto;
   min-height: 100vh;
-  padding: env(safe-area-inset-top) 16px calc(env(safe-area-inset-bottom) + 28px);
+  padding: env(safe-area-inset-top) max(16px, env(safe-area-inset-right)) calc(env(safe-area-inset-bottom) + 28px) max(16px, env(safe-area-inset-left));
 }
 
 /* ---------- Liquid Glass：仅用于导航 / 浮动控件 ---------- */
@@ -209,7 +209,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 /* ---------- login ---------- */
 .login-prefs { display: flex; justify-content: flex-end; padding-top: 14px; }
-.login-wrap { padding-top: 4vh; }
+.login-wrap { padding-top: 4vh; max-width: 440px; margin: 0 auto; }
 .login-logo {
   width: 76px; height: 76px; border-radius: 18px; display: block; margin: 0 auto;
   box-shadow: 0 0 0 .5px var(--separator), 0 6px 18px rgba(0, 0, 0, .08);
@@ -294,9 +294,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* 二维码底板：不透明，颜色与画布一致（亮色白 / 暗色黑） */
 .qr-box {
   position: relative;
-  /* 一般手机保持最大 380px；屏幕较矮时缩小，给楼层网格至少留出两排的空间 */
-  width: min(100%, 380px, max(200px, 100vh - 380px));
-  width: min(100%, 380px, max(200px, 100dvh - 380px));
+  /* 宽度足够时最大 440px（如 iPhone Duo 内屏）；屏幕较矮时缩小，给楼层网格至少留出两排的空间 */
+  width: min(100%, 440px, max(200px, 100vh - 420px));
+  width: min(100%, 440px, max(200px, 100dvh - 420px));
   margin: 0 auto; aspect-ratio: 1;
   background: #ffffff;
   border-radius: 20px;
@@ -473,6 +473,37 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 @media (min-width: 560px) {
   .floor-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* 矮屏幕（如 iPhone Duo 外屏 466×678、iPhone SE、横屏）：楼层按钮压扁一些，同样高度能多显示一排 */
+@media (max-height: 720px) {
+  .floor-tile { aspect-ratio: 1.6; border-radius: 18px; }
+  .floor-tile .name { font-size: 21px; }
+  .floor-scroll { padding-bottom: calc(env(safe-area-inset-bottom) + 8px); }
+}
+
+/* 横屏 / 宽而矮的屏幕（如 iPhone Duo 内屏横放 890×626、外屏横放 678×466）：
+   顶部栏通栏；左侧二维码卡片按可用高度取尺寸；右侧楼层标题 + 可单独滚动的楼层网格 */
+@media (orientation: landscape) and (min-width: 600px) {
+  #view-pass {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr);
+    column-gap: 20px;
+    max-width: 1100px;
+  }
+  #view-pass > .topbar { grid-column: 1 / -1; }
+  #view-pass > .qr-card {
+    grid-column: 1; grid-row: 2 / 4; align-self: start;
+    margin-bottom: calc(env(safe-area-inset-bottom) + 16px);
+  }
+  #view-pass > .floor-head { grid-column: 2; grid-row: 2; margin: 2px 4px 12px; }
+  #view-pass > .floor-scroll { grid-column: 2; grid-row: 3; }
+  .qr-box {
+    width: min(440px, max(180px, 100vh - 200px));
+    width: min(440px, max(180px, 100dvh - 200px));
+  }
+  .floor-grid { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
 }
 
 /* 浏览器不支持 backdrop-filter 时退化为更不透明的底色，保证可读 */
