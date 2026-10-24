@@ -857,6 +857,38 @@
   window.addEventListener('resize', updateSideRail);
   window.addEventListener('orientationchange', updateSideRail);
 
+  // 诊断：网址加 ?diag 时在页面上显示侧边栏检测用到的各项数值和版本号（用于真机排查）
+  const APP_VERSION = '2026.10.24-v29';
+  function diagInfo() {
+    const vv = window.visualViewport;
+    return {
+      version: APP_VERSION,
+      inner: `${window.innerWidth}×${window.innerHeight}`,
+      screen: `${screen.width}×${screen.height}`,
+      avail: `${screen.availWidth}×${screen.availHeight}`,
+      outer: `${window.outerWidth}×${window.outerHeight}`,
+      visualViewport: vv ? `${Math.round(vv.width)}×${Math.round(vv.height)}` : 'n/a',
+      docClient: `${document.documentElement.clientWidth}×${document.documentElement.clientHeight}`,
+      dpr: window.devicePixelRatio,
+      gap: screen.width - window.innerWidth,
+      isIPhone,
+      maxTouchPoints: navigator.maxTouchPoints,
+      standalone: isStandalone,
+      rail: document.documentElement.classList.contains('has-side-rail'),
+      ua: navigator.userAgent,
+    };
+  }
+  logEvent('Diag', JSON.stringify(diagInfo()));
+  if ((() => { try { return new URLSearchParams(location.search).has('diag'); } catch { return false; } })()) {
+    const box = document.createElement('pre');
+    box.className = 'diag-box';
+    const render = () => { box.textContent = Object.entries(diagInfo()).map(([k, v]) => `${k}: ${v}`).join('\n'); };
+    render();
+    document.body.appendChild(box);
+    window.addEventListener('resize', render);
+    setInterval(render, 1000);
+  }
+
   // ================= 启动 =================
   applyTheme();
   applyStaticI18n();

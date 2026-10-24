@@ -552,3 +552,14 @@ button { font: inherit; color: inherit; cursor: pointer; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* 诊断面板（网址加 ?diag 时显示） */
+.diag-box {
+  position: fixed; left: 8px; right: 8px; bottom: calc(env(safe-area-inset-bottom) + 8px);
+  z-index: 30; margin: 0; padding: 10px 12px;
+  background: rgba(0, 0, 0, .82); color: #fff;
+  font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  white-space: pre-wrap; word-break: break-all;
+  border-radius: 14px;
+  pointer-events: none;
+}
