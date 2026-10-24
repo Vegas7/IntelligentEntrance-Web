@@ -856,13 +856,14 @@
   // 只在 iPhone 的 Safari（非主屏幕 App）里、且页面比屏幕窄 60～140px 时启用；其他 iPhone 上这个差值为 0。
   // 网址后加 ?rail 可强制开启（用于测试）。
   //
-  // 主屏幕 App（PWA）折叠态则不同：系统状态栏在右侧一列，但这一列是透明的，页面延伸到它下面，
-  // 并通过 safe-area-inset-right（约 84px）告知。这时可以把按钮直接放进这一列（html.has-side-column）。
-  // 网址加 ?column 可在电脑上模拟这一列（84px）用于测试。
+  // 主屏幕 App（PWA）折叠态则不同：系统状态栏在摄像头一侧的一列，但这一列是透明的，页面延伸到它下面，
+  // 并通过 safe-area-inset-left / right（约 84px）告知。这时把按钮直接放进这一列（html.has-side-column）。
+  // 竖持时在右侧；外屏横持时随旋转方向在左侧或右侧（html.side-left / side-right）。
+  // 网址加 ?column（右侧）或 ?column=left 可在电脑上模拟这一列（84px）用于测试。
   const queryHas = (k) => { try { return new URLSearchParams(location.search).has(k); } catch { return false; } };
   const forceRail = queryHas('rail');
-  const simColumn = queryHas('column');
-  if (simColumn) document.documentElement.classList.add('sim-side-column');
+  const simSide = queryHas('column') ? (new URLSearchParams(location.search).get('column') === 'left' ? 'left' : 'right') : null;
+  if (simSide) document.documentElement.classList.add(simSide === 'left' ? 'sim-col-left' : 'sim-col-right');
   const isIPhone = /iPhone/.test(navigator.userAgent) && navigator.maxTouchPoints > 0;
   const isStandalone = navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
   // 读取 safe-area 内边距：env() 只能在 CSS 里取值，用一个隐藏的探针元素换算成像素
@@ -875,21 +876,35 @@
     const cs = getComputedStyle(saProbe);
     return { top: parseFloat(cs.paddingTop) || 0, right: parseFloat(cs.paddingRight) || 0, bottom: parseFloat(cs.paddingBottom) || 0, left: parseFloat(cs.paddingLeft) || 0 };
   };
-  function updateSideRail() {
+  // 透明侧栏在哪一侧：仅主屏幕 App（Safari 里那一列是不透明的浏览器栏）。
+  // 竖持：普通 iPhone 左右安全区为 0，大于 40 即为侧栏；
+  // 横持：普通 iPhone 灵动岛一侧也有安全区，所以额外要求宽度不超过 720（Duo 外屏横放 678，普通 iPhone 横放 ≥ 812）。
+  function sideColumnSide() {
+    if (simSide) return simSide;
+    if (!isIPhone || !isStandalone) return null;
+    const sa = safeArea();
     const portrait = window.innerHeight > window.innerWidth;
-    // 透明侧栏：仅主屏幕 App，竖持且右侧 safe-area 明显大于 0（普通 iPhone 竖持时为 0；Safari 里那一列是不透明的浏览器栏）
-    const sideColumn = simColumn || (isIPhone && isStandalone && portrait && safeArea().right >= 40);
+    if (!portrait && window.innerWidth > 720) return null;
+    if (sa.right >= 40 && sa.right >= sa.left) return 'right';
+    if (sa.left >= 40) return 'left';
+    return null;
+  }
+  function updateSideRail() {
+    const side = sideColumnSide();
     const gap = screen.width - window.innerWidth;
-    const rail = !sideColumn && (forceRail || (isIPhone && !isStandalone && gap >= 60 && gap <= 140));
-    document.documentElement.classList.toggle('has-side-column', sideColumn);
-    document.documentElement.classList.toggle('has-side-rail', rail);
+    const rail = !side && (forceRail || (isIPhone && !isStandalone && gap >= 60 && gap <= 140));
+    const root = document.documentElement.classList;
+    root.toggle('has-side-column', !!side);
+    root.toggle('side-left', side === 'left');
+    root.toggle('side-right', side === 'right');
+    root.toggle('has-side-rail', rail);
   }
   updateSideRail();
   window.addEventListener('resize', updateSideRail);
   window.addEventListener('orientationchange', updateSideRail);
 
   // 诊断：网址加 ?diag 时在页面上显示侧边栏检测用到的各项数值和版本号（用于真机排查）
-  const APP_VERSION = '2026.10.24-v31';
+  const APP_VERSION = '2026.10.24-v32';
   function diagInfo() {
     const vv = window.visualViewport;
     const sa = safeArea();

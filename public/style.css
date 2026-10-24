@@ -144,24 +144,37 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .has-side-rail .topbar { padding-top: calc(env(safe-area-inset-top) + 12px); padding-bottom: 6px; }
 .has-side-rail .topbar-title { font-size: 22px; }
 
-/* ---------- 透明侧栏：主屏幕 App 折叠态，系统状态栏在右侧透明的一列（html.has-side-column，见 app.js）。
-   页面延伸到这一列下面，按钮竖排放进这一列、位于时间 / 信号图标下方 ---------- */
-:root { --col-w: env(safe-area-inset-right); }
-/* ?column：在电脑上模拟 84px 的透明侧栏 */
-.sim-side-column { --col-w: 84px; }
-.sim-side-column .view { padding-right: 84px; }
+/* ---------- 透明侧栏：主屏幕 App 折叠态，系统状态栏在摄像头一侧透明的一列（html.has-side-column，见 app.js）。
+   竖持时在右侧；横持时随旋转方向在左侧或右侧（html.side-left / side-right）。
+   页面延伸到这一列下面，按钮竖排放进这一列、靠下放置 ---------- */
+:root {
+  --col-r: env(safe-area-inset-right);
+  --col-l: env(safe-area-inset-left);
+  /* 上下安全区之和：计算二维码可用高度时扣除 */
+  --sa-v: calc(env(safe-area-inset-top) + env(safe-area-inset-bottom));
+}
+/* ?column / ?column=left：在电脑上模拟 84px 的透明侧栏 */
+.sim-col-right { --col-r: 84px; }
+.sim-col-right .view { padding-right: 84px; }
+.sim-col-left { --col-l: 84px; }
+.sim-col-left .view { padding-left: 84px; }
 .has-side-column .topbar-tools,
 .has-side-column .login-prefs {
   position: fixed;
   z-index: 15;
   /* 按 iOS 的习惯靠下放置（与 Safari 折叠态的按钮位置一致，单手好按） */
   bottom: calc(env(safe-area-inset-bottom) + 16px);
-  right: max(0px, calc((var(--col-w) - 46px) / 2));
+  right: max(0px, calc((var(--col-r) - 46px) / 2));
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
   padding: 0;
+}
+.has-side-column.side-left .topbar-tools,
+.has-side-column.side-left .login-prefs {
+  right: auto;
+  left: max(0px, calc((var(--col-l) - 46px) / 2));
 }
 .has-side-column .glass-group,
 .has-side-column .js-prefs { flex-direction: column; }
@@ -368,8 +381,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .qr-box {
   position: relative;
   /* 宽度足够时最大 440px（如 iPhone Duo 内屏）；屏幕较矮时缩小，给楼层网格至少留出两排的空间 */
-  width: min(100%, 440px, max(200px, 100vh - 420px));
-  width: min(100%, 440px, max(200px, 100dvh - 420px));
+  width: min(100%, 440px, max(200px, 100vh - 420px - var(--sa-v)));
+  width: min(100%, 440px, max(200px, 100dvh - 420px - var(--sa-v)));
   margin: 0 auto; aspect-ratio: 1;
   background: #ffffff;
   border-radius: 20px;
@@ -549,18 +562,22 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .floor-grid { grid-template-columns: repeat(4, 1fr); }
 }
 
-/* 侧边栏模式下顶部只剩一行标题，二维码可以多占一些高度 */
+/* 侧边栏模式下顶部只剩一行标题，二维码可以多占一些高度；
+   352px = 标题行 + 卡片内边距/倒计时 + 楼层标题 + 两排楼层按钮（矮屏紧凑间距下），再扣上下安全区 */
 .has-side-rail .qr-box,
 .has-side-column .qr-box {
-  width: min(100%, 440px, max(180px, 100vh - 370px));
-  width: min(100%, 440px, max(180px, 100dvh - 370px));
+  width: min(100%, 440px, max(180px, 100vh - 352px - var(--sa-v)));
+  width: min(100%, 440px, max(180px, 100dvh - 352px - var(--sa-v)));
 }
 
-/* 矮屏幕（如 iPhone Duo 外屏 466×678、iPhone SE、横屏）：楼层按钮压扁一些，同样高度能多显示一排 */
+/* 矮屏幕（如 iPhone Duo 外屏 466×678、iPhone SE、横屏）：楼层按钮压扁一些、间距收紧，同样高度能多显示一排 */
 @media (max-height: 720px) {
   .floor-tile { aspect-ratio: 1.6; border-radius: 18px; }
   .floor-tile .name { font-size: 21px; }
   .floor-scroll { padding-bottom: calc(env(safe-area-inset-bottom) + 8px); }
+  .floor-head { margin: 14px 4px 10px; }
+  .qr-card { padding: 12px 12px 10px; }
+  .qr-meta { margin-top: 8px; }
 }
 
 /* 横屏 / 宽而矮的屏幕（如 iPhone Duo 内屏横放 890×626、外屏横放 678×466）：
@@ -581,8 +598,13 @@ button { font: inherit; color: inherit; cursor: pointer; }
   #view-pass > .floor-head { grid-column: 2; grid-row: 2; margin: 2px 4px 12px; }
   #view-pass > .floor-scroll { grid-column: 2; grid-row: 3; }
   .qr-box {
-    width: min(440px, max(180px, 100vh - 200px));
-    width: min(440px, max(180px, 100dvh - 200px));
+    width: min(440px, max(180px, 100vh - 200px - var(--sa-v)));
+    width: min(440px, max(180px, 100dvh - 200px - var(--sa-v)));
+  }
+  /* 横屏透明侧栏（外屏横放）：按钮在侧栏里，顶部只剩标题，二维码可再大一些 */
+  .has-side-column .qr-box {
+    width: min(440px, max(160px, 100vh - 172px - var(--sa-v)));
+    width: min(440px, max(160px, 100dvh - 172px - var(--sa-v)));
   }
   .floor-grid { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
 }
