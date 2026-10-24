@@ -114,6 +114,35 @@ button { font: inherit; color: inherit; cursor: pointer; }
   z-index: 20;
   pointer-events: none;
 }
+/* 折叠态 iPhone Duo 的 Safari 把状态栏和浏览器按钮放在屏幕右侧一列，且忽略 theme-color，
+   改为采样页面右缘固定元素的颜色。放一条与背景同色的 8px 细条（肉眼不可见），让那一列与页面融为一体。 */
+.edge-guard-right {
+  position: fixed; top: 0; bottom: 0; right: 0;
+  width: 8px;
+  background: var(--bg);
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* ---------- 侧边按钮栏：检测到 Safari 右侧浏览器栏时（html.has-side-rail，见 app.js），
+   语言 / 主题按钮组和头像竖排贴在页面右缘，紧挨 Safari 的那一列 ---------- */
+.has-side-rail .topbar-tools,
+.has-side-rail .login-prefs {
+  position: fixed;
+  z-index: 15;
+  top: calc(env(safe-area-inset-top) + 12px);
+  right: 12px;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+}
+.has-side-rail .glass-group,
+.has-side-rail .js-prefs { flex-direction: column; }
+.has-side-rail .view { padding-right: 68px; }
+.has-side-rail .topbar { padding-top: calc(env(safe-area-inset-top) + 12px); padding-bottom: 6px; }
+.has-side-rail .topbar-title { font-size: 22px; }
 
 .view {
   max-width: 640px;
@@ -286,6 +315,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   font-size: 28px; font-weight: 700; letter-spacing: -.02em;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
+.topbar-tools { display: flex; align-items: center; gap: 8px; flex: none; }
 .avatar-btn { width: 44px; height: 44px; padding: 3px; border-radius: 50%; overflow: hidden; flex: none; }
 .avatar-btn img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
 
@@ -332,7 +362,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 
 .floor-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 24px 4px 12px; }
-.floor-head h2 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -.01em; color: var(--label); }
+.floor-head .chip { flex: none; }
+.floor-head h2 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -.01em; color: var(--label); min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .floor-head h2 small { font-size: 13px; font-weight: 400; color: var(--label-2); letter-spacing: 0; }
 
 /* 楼层按钮：实色单元格；当前楼层为实色着色 */
@@ -473,6 +504,12 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 @media (min-width: 560px) {
   .floor-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* 侧边栏模式下顶部只剩一行标题，二维码可以多占一些高度 */
+.has-side-rail .qr-box {
+  width: min(100%, 440px, max(180px, 100vh - 370px));
+  width: min(100%, 440px, max(180px, 100dvh - 370px));
 }
 
 /* 矮屏幕（如 iPhone Duo 外屏 466×678、iPhone SE、横屏）：楼层按钮压扁一些，同样高度能多显示一排 */
