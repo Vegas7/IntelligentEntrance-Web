@@ -616,6 +616,14 @@
     els.floorTitle.replaceChildren(t(state.allMode ? 'floors.all' : 'floors.auth'), hint);
     els.btnMode.textContent = t(state.allMode ? 'floors.toAuth' : 'floors.toAll');
     els.btnMode.hidden = !state.allFloors.length && !state.allMode;
+    // 侧栏里的图标版切换按钮：与文字按钮同步（全部楼层时高亮）
+    const modeIcon = $('btn-mode-icon');
+    const modeLabel = t(state.allMode ? 'floors.toAuth' : 'floors.toAll');
+    modeIcon.setAttribute('aria-label', modeLabel);
+    modeIcon.title = modeLabel;
+    modeIcon.setAttribute('aria-pressed', String(state.allMode));
+    modeIcon.classList.toggle('is-on', state.allMode);
+    modeIcon.disabled = els.btnMode.hidden;
     els.floorEmpty.hidden = floors.length > 0;
     els.floorEmpty.textContent = state.token ? t('floors.loading') : '';
 
@@ -675,12 +683,14 @@
       .catch((e) => logEvent('Pass', `同步默认楼层失败: ${e.message}`));
   }
 
-  els.btnMode.addEventListener('click', () => {
+  function toggleFloorMode() {
     state.allMode = !state.allMode;
     renderFloors();
     // 切换列表后回到顶部，避免短列表停在长列表的滚动位置而“藏”到上方
     document.querySelector('.floor-scroll').scrollTop = 0;
-  });
+  }
+  els.btnMode.addEventListener('click', toggleFloorMode);
+  $('btn-mode-icon').addEventListener('click', toggleFloorMode);
 
   // ================= 个人中心 =================
   function renderProfile() {
@@ -879,7 +889,7 @@
   window.addEventListener('orientationchange', updateSideRail);
 
   // 诊断：网址加 ?diag 时在页面上显示侧边栏检测用到的各项数值和版本号（用于真机排查）
-  const APP_VERSION = '2026.10.24-v30';
+  const APP_VERSION = '2026.10.24-v31';
   function diagInfo() {
     const vv = window.visualViewport;
     const sa = safeArea();

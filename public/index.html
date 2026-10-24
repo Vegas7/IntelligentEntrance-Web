@@ -93,6 +93,10 @@
     <header class="topbar">
       <h1 id="building-name" class="topbar-title">智能通行</h1>
       <div class="topbar-tools">
+        <!-- 楼层列表切换（图标版）：仅在主屏幕 App 的透明侧栏模式下显示，替代楼层标题旁的文字按钮 -->
+        <button id="btn-mode-icon" type="button" class="mode-icon-btn" aria-pressed="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M12 3.5 21 8l-9 4.5L3 8z"/><path d="M3 12l9 4.5 9-4.5"/><path d="M3 16l9 4.5 9-4.5"/></g></svg>
+        </button>
         <div class="glass-group">
           <div class="js-prefs"></div>
           <button id="btn-debug" class="icon-btn" data-i18n-aria="pass.debug" hidden>

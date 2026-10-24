@@ -154,10 +154,11 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .has-side-column .login-prefs {
   position: fixed;
   z-index: 15;
-  top: calc(env(safe-area-inset-top) + 170px);
+  /* 按 iOS 的习惯靠下放置（与 Safari 折叠态的按钮位置一致，单手好按） */
+  bottom: calc(env(safe-area-inset-bottom) + 16px);
   right: max(0px, calc((var(--col-w) - 46px) / 2));
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
   align-items: center;
   gap: 10px;
   padding: 0;
@@ -165,7 +166,26 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .has-side-column .glass-group,
 .has-side-column .js-prefs { flex-direction: column; }
 .has-side-column .topbar { padding-bottom: 6px; }
-.has-side-column .topbar-title { font-size: 22px; }
+.has-side-column .topbar-title { font-size: 22px; text-align: center; }
+/* 楼层列表切换移到侧栏（图标），隐藏楼层标题旁的文字按钮 */
+.has-side-column .floor-head .chip { display: none; }
+.mode-icon-btn { display: none; }
+.has-side-column .mode-icon-btn {
+  display: grid; place-items: center;
+  width: 46px; height: 46px; padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--glass-rim);
+  background: var(--glass);
+  -webkit-backdrop-filter: var(--blur);
+  backdrop-filter: var(--blur);
+  box-shadow: inset 0 1px 0 var(--glass-hi), inset 0 0 0 .5px var(--glass-edge), var(--glass-shadow);
+  color: var(--label);
+  transition: transform .18s cubic-bezier(.3, .7, .4, 1.4), background-color .2s ease;
+}
+.has-side-column .mode-icon-btn svg { width: 22px; height: 22px; }
+.has-side-column .mode-icon-btn:active { transform: scale(.94); }
+.has-side-column .mode-icon-btn.is-on { background: var(--tint); color: var(--on-tint); border-color: color-mix(in srgb, var(--tint) 60%, #ffffff); }
+.has-side-column .mode-icon-btn:disabled { opacity: .4; }
 
 .view {
   max-width: 640px;
