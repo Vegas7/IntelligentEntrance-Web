@@ -935,7 +935,7 @@
   }, 1000);
 
   // 诊断：网址加 ?diag 时在页面上显示侧边栏检测用到的各项数值和版本号（用于真机排查）
-  const APP_VERSION = '2026.10.24-v34';
+  const APP_VERSION = '2026.10.24-v35';
   function diagInfo() {
     const vv = window.visualViewport;
     const sa = safeArea();
@@ -961,15 +961,34 @@
     };
   }
   logEvent('Diag', JSON.stringify(diagInfo()));
-  if ((() => { try { return new URLSearchParams(location.search).has('diag'); } catch { return false; } })()) {
-    const box = document.createElement('pre');
-    box.className = 'diag-box';
-    const render = () => { box.textContent = Object.entries(diagInfo()).map(([k, v]) => `${k}: ${v}`).join('\n'); };
+  // 诊断面板：网址加 ?diag，或在主屏幕 App 里快速连点三下楼宇名称，即可显示 / 隐藏
+  let diagBox = null;
+  let diagTimer = null;
+  function toggleDiag() {
+    if (diagBox) {
+      clearInterval(diagTimer);
+      diagBox.remove();
+      diagBox = null;
+      return;
+    }
+    diagBox = document.createElement('pre');
+    diagBox.className = 'diag-box';
+    const render = () => { if (diagBox) diagBox.textContent = Object.entries(diagInfo()).map(([k, v]) => `${k}: ${v}`).join('\n'); };
     render();
-    document.body.appendChild(box);
-    window.addEventListener('resize', render);
-    setInterval(render, 1000);
+    document.body.appendChild(diagBox);
+    diagTimer = setInterval(render, 1000);
   }
+  if (queryHas('diag')) toggleDiag();
+  let titleTaps = [];
+  els.buildingName.addEventListener('click', () => {
+    const now = Date.now();
+    titleTaps = titleTaps.filter((t) => now - t < 700);
+    titleTaps.push(now);
+    if (titleTaps.length >= 3) {
+      titleTaps = [];
+      toggleDiag();
+    }
+  });
 
   // ================= 启动 =================
   applyTheme();
