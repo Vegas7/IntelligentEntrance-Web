@@ -913,9 +913,29 @@
   window.addEventListener('orientationchange', updateSideRail);
   // 左右横屏直接互转（180°）时尺寸不变、不一定触发 resize，单独监听方向变化
   if (screen.orientation && screen.orientation.addEventListener) screen.orientation.addEventListener('change', updateSideRail);
+  // 冷启动（从多任务关闭后重新打开）时，iOS 会在首次脚本执行之后才给出侧栏的 safe-area，且不触发 resize。
+  // 监听探针元素的尺寸（即安全区）变化，安全区一到位就重新检测；另在加载完成、回到前台以及启动后几秒内补检几次。
+  if ('ResizeObserver' in window) {
+    try { new ResizeObserver(() => updateSideRail()).observe(saProbe, { box: 'border-box' }); } catch {}
+  }
+  window.addEventListener('load', updateSideRail);
+  window.addEventListener('pageshow', updateSideRail);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') updateSideRail(); });
+  requestAnimationFrame(() => requestAnimationFrame(updateSideRail));
+  [150, 500, 1000, 2000, 3000].forEach((ms) => setTimeout(updateSideRail, ms));
+  // 兜底：ResizeObserver 对隐藏的探针不一定触发，每秒比对一次安全区和窗口尺寸，有变化才重新检测（开销可忽略）
+  let lastLayoutKey = '';
+  setInterval(() => {
+    const sa = safeArea();
+    const key = `${sa.top},${sa.right},${sa.bottom},${sa.left},${window.innerWidth}x${window.innerHeight}`;
+    if (key !== lastLayoutKey) {
+      lastLayoutKey = key;
+      updateSideRail();
+    }
+  }, 1000);
 
   // 诊断：网址加 ?diag 时在页面上显示侧边栏检测用到的各项数值和版本号（用于真机排查）
-  const APP_VERSION = '2026.10.24-v33';
+  const APP_VERSION = '2026.10.24-v34';
   function diagInfo() {
     const vv = window.visualViewport;
     const sa = safeArea();
