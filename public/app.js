@@ -845,23 +845,47 @@
   // 网页无法往那一列里加按钮，所以检测到这一列时，把语言 / 主题 / 头像按钮竖排贴在页面右缘、紧挨着它。
   // 只在 iPhone 的 Safari（非主屏幕 App）里、且页面比屏幕窄 60～140px 时启用；其他 iPhone 上这个差值为 0。
   // 网址后加 ?rail 可强制开启（用于测试）。
-  const forceRail = (() => { try { return new URLSearchParams(location.search).has('rail'); } catch { return false; } })();
+  //
+  // 主屏幕 App（PWA）折叠态则不同：系统状态栏在右侧一列，但这一列是透明的，页面延伸到它下面，
+  // 并通过 safe-area-inset-right（约 84px）告知。这时可以把按钮直接放进这一列（html.has-side-column）。
+  // 网址加 ?column 可在电脑上模拟这一列（84px）用于测试。
+  const queryHas = (k) => { try { return new URLSearchParams(location.search).has(k); } catch { return false; } };
+  const forceRail = queryHas('rail');
+  const simColumn = queryHas('column');
+  if (simColumn) document.documentElement.classList.add('sim-side-column');
   const isIPhone = /iPhone/.test(navigator.userAgent) && navigator.maxTouchPoints > 0;
   const isStandalone = navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+  // 读取 safe-area 内边距：env() 只能在 CSS 里取值，用一个隐藏的探针元素换算成像素
+  const saProbe = document.createElement('div');
+  saProbe.setAttribute('aria-hidden', 'true');
+  saProbe.style.cssText = 'position:fixed;top:0;left:0;width:0;height:0;visibility:hidden;pointer-events:none;' +
+    'padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);';
+  document.body.appendChild(saProbe);
+  const safeArea = () => {
+    const cs = getComputedStyle(saProbe);
+    return { top: parseFloat(cs.paddingTop) || 0, right: parseFloat(cs.paddingRight) || 0, bottom: parseFloat(cs.paddingBottom) || 0, left: parseFloat(cs.paddingLeft) || 0 };
+  };
   function updateSideRail() {
+    const portrait = window.innerHeight > window.innerWidth;
+    // 透明侧栏：仅主屏幕 App，竖持且右侧 safe-area 明显大于 0（普通 iPhone 竖持时为 0；Safari 里那一列是不透明的浏览器栏）
+    const sideColumn = simColumn || (isIPhone && isStandalone && portrait && safeArea().right >= 40);
     const gap = screen.width - window.innerWidth;
-    const on = forceRail || (isIPhone && !isStandalone && gap >= 60 && gap <= 140);
-    document.documentElement.classList.toggle('has-side-rail', on);
+    const rail = !sideColumn && (forceRail || (isIPhone && !isStandalone && gap >= 60 && gap <= 140));
+    document.documentElement.classList.toggle('has-side-column', sideColumn);
+    document.documentElement.classList.toggle('has-side-rail', rail);
   }
   updateSideRail();
   window.addEventListener('resize', updateSideRail);
   window.addEventListener('orientationchange', updateSideRail);
 
   // 诊断：网址加 ?diag 时在页面上显示侧边栏检测用到的各项数值和版本号（用于真机排查）
-  const APP_VERSION = '2026.10.24-v29';
+  const APP_VERSION = '2026.10.24-v30';
   function diagInfo() {
     const vv = window.visualViewport;
+    const sa = safeArea();
     return {
+      safeArea: `top ${sa.top} / right ${sa.right} / bottom ${sa.bottom} / left ${sa.left}`,
+      column: document.documentElement.classList.contains('has-side-column'),
       version: APP_VERSION,
       inner: `${window.innerWidth}×${window.innerHeight}`,
       screen: `${screen.width}×${screen.height}`,

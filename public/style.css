@@ -144,6 +144,29 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .has-side-rail .topbar { padding-top: calc(env(safe-area-inset-top) + 12px); padding-bottom: 6px; }
 .has-side-rail .topbar-title { font-size: 22px; }
 
+/* ---------- 透明侧栏：主屏幕 App 折叠态，系统状态栏在右侧透明的一列（html.has-side-column，见 app.js）。
+   页面延伸到这一列下面，按钮竖排放进这一列、位于时间 / 信号图标下方 ---------- */
+:root { --col-w: env(safe-area-inset-right); }
+/* ?column：在电脑上模拟 84px 的透明侧栏 */
+.sim-side-column { --col-w: 84px; }
+.sim-side-column .view { padding-right: 84px; }
+.has-side-column .topbar-tools,
+.has-side-column .login-prefs {
+  position: fixed;
+  z-index: 15;
+  top: calc(env(safe-area-inset-top) + 170px);
+  right: max(0px, calc((var(--col-w) - 46px) / 2));
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+}
+.has-side-column .glass-group,
+.has-side-column .js-prefs { flex-direction: column; }
+.has-side-column .topbar { padding-bottom: 6px; }
+.has-side-column .topbar-title { font-size: 22px; }
+
 .view {
   max-width: 640px;
   margin: 0 auto;
@@ -507,7 +530,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 
 /* 侧边栏模式下顶部只剩一行标题，二维码可以多占一些高度 */
-.has-side-rail .qr-box {
+.has-side-rail .qr-box,
+.has-side-column .qr-box {
   width: min(100%, 440px, max(180px, 100vh - 370px));
   width: min(100%, 440px, max(180px, 100dvh - 370px));
 }
