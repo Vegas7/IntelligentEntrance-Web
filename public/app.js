@@ -850,18 +850,13 @@
     resizeTimer = setTimeout(() => state.qr && state.qr.code && !els.viewPass.hidden && drawQr(state.qr.code), 150);
   });
 
-  // ================= iPhone Duo 折叠态 Safari：右侧竖向按钮栏 =================
-  // 折叠态下 Safari 把状态栏和浏览器按钮放在屏幕右侧一列（约 84px），页面宽度因此比屏幕窄。
-  // 网页无法往那一列里加按钮，所以检测到这一列时，把语言 / 主题 / 头像按钮竖排贴在页面右缘、紧挨着它。
-  // 只在 iPhone 的 Safari（非主屏幕 App）里、且页面比屏幕窄 60～140px 时启用；其他 iPhone 上这个差值为 0。
-  // 网址后加 ?rail 可强制开启（用于测试）。
-  //
-  // 主屏幕 App（PWA）折叠态则不同：系统状态栏在摄像头一侧的一列，但这一列是透明的，页面延伸到它下面，
+  // ================= iPhone Duo 主屏幕 App：透明侧栏里的按钮 =================
+  // 主屏幕 App（PWA）在 Duo 上，系统状态栏在摄像头一侧的一列，这一列是透明的，页面延伸到它下面，
   // 并通过 safe-area-inset-left / right（约 84px）告知。这时把按钮直接放进这一列（html.has-side-column）。
-  // 竖持时在右侧；外屏横持时随旋转方向在左侧或右侧（html.side-left / side-right）。
+  // 竖持时在右侧；横持时随旋转方向在左侧或右侧（html.side-left / side-right）。
+  // Safari 里那一列是 Safari 自己的浏览器栏，网页无法放入按钮，按钮保持在顶部栏。
   // 网址加 ?column（右侧）或 ?column=left 可在电脑上模拟这一列（84px）用于测试。
   const queryHas = (k) => { try { return new URLSearchParams(location.search).has(k); } catch { return false; } };
-  const forceRail = queryHas('rail');
   const simSide = queryHas('column') ? (new URLSearchParams(location.search).get('column') === 'left' ? 'left' : 'right') : null;
   if (simSide) document.documentElement.classList.add(simSide === 'left' ? 'sim-col-left' : 'sim-col-right');
   const isIPhone = /iPhone/.test(navigator.userAgent) && navigator.maxTouchPoints > 0;
@@ -901,13 +896,10 @@
     const side = sideColumnSide();
     // 只有外屏（横放宽度 ≤ 720）的摄像头在侧栏底部；内屏是屏下摄像头，侧栏底部是空的，不需要避让
     document.documentElement.classList.toggle('cam-bottom', !!side && (simCamBottom || (window.innerWidth > window.innerHeight && window.innerWidth <= 720 && rotatedClockwise())));
-    const gap = screen.width - window.innerWidth;
-    const rail = !side && (forceRail || (isIPhone && !isStandalone && gap >= 60 && gap <= 140));
     const root = document.documentElement.classList;
     root.toggle('has-side-column', !!side);
     root.toggle('side-left', side === 'left');
     root.toggle('side-right', side === 'right');
-    root.toggle('has-side-rail', rail);
   }
   updateSideRail();
   window.addEventListener('resize', updateSideRail);
@@ -936,7 +928,7 @@
   }, 1000);
 
   // 诊断：网址加 ?diag 时在页面上显示侧边栏检测用到的各项数值和版本号（用于真机排查）
-  const APP_VERSION = '2026.10.24-v37';
+  const APP_VERSION = '2026.10.24-v38';
   function diagInfo() {
     const vv = window.visualViewport;
     const sa = safeArea();
@@ -953,11 +945,9 @@
       visualViewport: vv ? `${Math.round(vv.width)}×${Math.round(vv.height)}` : 'n/a',
       docClient: `${document.documentElement.clientWidth}×${document.documentElement.clientHeight}`,
       dpr: window.devicePixelRatio,
-      gap: screen.width - window.innerWidth,
       isIPhone,
       maxTouchPoints: navigator.maxTouchPoints,
       standalone: isStandalone,
-      rail: document.documentElement.classList.contains('has-side-rail'),
       ua: navigator.userAgent,
     };
   }

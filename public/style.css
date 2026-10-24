@@ -124,26 +124,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
   pointer-events: none;
 }
 
-/* ---------- 侧边按钮栏：检测到 Safari 右侧浏览器栏时（html.has-side-rail，见 app.js），
-   语言 / 主题按钮组和头像竖排贴在页面右缘，紧挨 Safari 的那一列 ---------- */
-.has-side-rail .topbar-tools,
-.has-side-rail .login-prefs {
-  position: fixed;
-  z-index: 15;
-  top: calc(env(safe-area-inset-top) + 12px);
-  right: 12px;
-  display: flex;
-  flex-direction: column-reverse;
-  align-items: center;
-  gap: 10px;
-  padding: 0;
-}
-.has-side-rail .glass-group,
-.has-side-rail .js-prefs { flex-direction: column; }
-.has-side-rail .view { padding-right: 68px; }
-.has-side-rail .topbar { padding-top: calc(env(safe-area-inset-top) + 12px); padding-bottom: 6px; }
-.has-side-rail .topbar-title { font-size: 22px; }
-
 /* ---------- 透明侧栏：主屏幕 App 折叠态，系统状态栏在摄像头一侧透明的一列（html.has-side-column，见 app.js）。
    竖持时在右侧；横持时随旋转方向在左侧或右侧（html.side-left / side-right）。
    页面延伸到这一列下面，按钮竖排放进这一列、靠下放置 ---------- */
@@ -569,7 +549,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 /* 侧边栏模式下顶部只剩一行标题，二维码可以多占一些高度；
    352px = 标题行 + 卡片内边距/倒计时 + 楼层标题 + 两排楼层按钮（矮屏紧凑间距下），再扣上下安全区 */
-.has-side-rail .qr-box,
 .has-side-column .qr-box {
   width: min(100%, 440px, max(180px, 100vh - 352px - var(--sa-v)));
   width: min(100%, 440px, max(180px, 100dvh - 352px - var(--sa-v)));
