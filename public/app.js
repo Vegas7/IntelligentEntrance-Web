@@ -889,8 +889,17 @@
     if (sa.left >= 40) return 'left';
     return null;
   }
+  // 设备向右（顺时针）转 90° 时，外屏摄像头落在侧栏的底部，按钮栏需要向上避让（html.cam-bottom）。
+  // iOS：window.orientation = -90 即顺时针；兼容 screen.orientation.angle = 270。?cam=bottom 可模拟。
+  const simCamBottom = (() => { try { return new URLSearchParams(location.search).get('cam') === 'bottom'; } catch { return false; } })();
+  function rotatedClockwise() {
+    if (typeof window.orientation === 'number') return window.orientation === -90;
+    if (screen.orientation && typeof screen.orientation.angle === 'number') return screen.orientation.angle === 270;
+    return false;
+  }
   function updateSideRail() {
     const side = sideColumnSide();
+    document.documentElement.classList.toggle('cam-bottom', !!side && (simCamBottom || (window.innerWidth > window.innerHeight && rotatedClockwise())));
     const gap = screen.width - window.innerWidth;
     const rail = !side && (forceRail || (isIPhone && !isStandalone && gap >= 60 && gap <= 140));
     const root = document.documentElement.classList;
@@ -902,15 +911,19 @@
   updateSideRail();
   window.addEventListener('resize', updateSideRail);
   window.addEventListener('orientationchange', updateSideRail);
+  // 左右横屏直接互转（180°）时尺寸不变、不一定触发 resize，单独监听方向变化
+  if (screen.orientation && screen.orientation.addEventListener) screen.orientation.addEventListener('change', updateSideRail);
 
   // 诊断：网址加 ?diag 时在页面上显示侧边栏检测用到的各项数值和版本号（用于真机排查）
-  const APP_VERSION = '2026.10.24-v32';
+  const APP_VERSION = '2026.10.24-v33';
   function diagInfo() {
     const vv = window.visualViewport;
     const sa = safeArea();
     return {
       safeArea: `top ${sa.top} / right ${sa.right} / bottom ${sa.bottom} / left ${sa.left}`,
       column: document.documentElement.classList.contains('has-side-column'),
+      orientation: `${typeof window.orientation === 'number' ? window.orientation : 'n/a'} / ${screen.orientation ? `${screen.orientation.type} ${screen.orientation.angle}` : 'n/a'}`,
+      camBottom: document.documentElement.classList.contains('cam-bottom'),
       version: APP_VERSION,
       inner: `${window.innerWidth}×${window.innerHeight}`,
       screen: `${screen.width}×${screen.height}`,

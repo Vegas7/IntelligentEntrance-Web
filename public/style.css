@@ -176,6 +176,11 @@ button { font: inherit; color: inherit; cursor: pointer; }
   right: auto;
   left: max(0px, calc((var(--col-l) - 46px) / 2));
 }
+/* 向右（顺时针）横放时外屏摄像头在侧栏底部：按钮栏整体上移避让（96px 为摄像头区域预留） */
+.has-side-column.cam-bottom .topbar-tools,
+.has-side-column.cam-bottom .login-prefs {
+  bottom: calc(env(safe-area-inset-bottom) + 96px);
+}
 .has-side-column .glass-group,
 .has-side-column .js-prefs { flex-direction: column; }
 .has-side-column .topbar { padding-bottom: 6px; }
