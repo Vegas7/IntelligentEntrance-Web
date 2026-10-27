@@ -11,7 +11,7 @@
   <meta name="referrer" content="no-referrer">
   <title>智能通行</title>
   <script>
-    // 首帧前应用用户选择的主题，避免闪烁；theme-color 也在这里先定好（iOS 用它给状态栏 / Duo 侧栏着色）
+    // 首帧前应用用户选择的主题，避免闪烁；theme-color 也在这里先定好（iOS 用它给状态栏着色）
     (function () {
       var t = null;
       try { t = JSON.parse(localStorage.getItem('ie.theme')); } catch (e) {}
@@ -21,8 +21,13 @@
       root.style.backgroundColor = color;
       root.style.colorScheme = dark ? 'dark' : 'light';
       document.getElementById('meta-theme').setAttribute('content', color);
-      // 侧栏在页面外（iOS 27.2 的折叠态 Duo 主屏幕 App）时，状态栏样式也跟随主题，见 app.js applyTheme
-      if (dark && navigator.standalone === true && (outerWidth - innerWidth >= 40 || outerHeight - innerHeight >= 40))
+      // iOS 27.2 起 iPhone Duo 的主屏幕 App：状态栏样式为 default 时页面止于状态栏侧栏（侧栏在页面外、颜色固定为打开时的），
+      // 为 black-translucent 时页面铺到侧栏下面，侧栏由页面自己绘制、随主题实时变色。
+      // 所以在 Duo 上不论深浅色都用 black-translucent；普通 iPhone 保持 default（iOS 26 顶部模糊的规避依赖它）。
+      // 本次打开若已是页面外侧栏（恰好一边比窗口短 60–110px）即判定为 Duo，并记下来（app.js 写 ie.duoColumn）供以后打开时直接使用
+      var duo = false, dw, dh;
+      try { duo = JSON.parse(localStorage.getItem('ie.duoColumn')) === true; } catch (e) {}
+      if (navigator.standalone === true && /iPhone/.test(navigator.userAgent) && (duo || ((dw = outerWidth - innerWidth) >= 60 && dw <= 110 && Math.abs(outerHeight - innerHeight) < 4) || ((dh = outerHeight - innerHeight) >= 60 && dh <= 110 && Math.abs(outerWidth - innerWidth) < 4)))
         document.getElementById('meta-status').setAttribute('content', 'black-translucent');
     })();
   </script>

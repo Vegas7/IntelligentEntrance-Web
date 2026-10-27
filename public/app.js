@@ -104,13 +104,18 @@
   const darkMq = window.matchMedia('(prefers-color-scheme: dark)');
   // 用户未手动选择时跟随系统；手动切换后记住选择
   const effectiveTheme = () => document.documentElement.dataset.theme || (darkMq.matches ? 'dark' : 'light');
-  // iOS 27.2 起折叠态 iPhone Duo 的主屏幕 App 里，状态栏侧栏在页面之外（页面比屏幕窄 84px），由系统按页面颜色填充
-  const columnOutsidePage = () =>
-    navigator.standalone === true &&
-    (window.outerWidth - window.innerWidth >= 40 || window.outerHeight - window.innerHeight >= 40);
-  // 与主题项目 CFSM-Theme 的做法一致，切换时不用重载页面，状态栏 / Duo 侧栏的颜色也能立即跟上：
-  // 根元素和 body 直接写上背景色与 color-scheme，theme-color 整枚换掉（只改 content 不一定生效）；
-  // 侧栏在页面外时再同步状态栏样式（普通 iPhone 保持 default，避免页面钻到状态栏下面）
+  // iOS 27.2 起 iPhone Duo 的主屏幕 App 在状态栏样式为 default 时，状态栏侧栏在页面之外（页面比窗口窄 / 矮 84px 左右）。
+  // 遇到这种情况就记下这是 Duo：之后打开时 index.html 首帧脚本改用 black-translucent，让页面铺到侧栏下面
+  // 恰好一边比窗口短 60–110px（侧栏宽约 84），另一边相同
+  const columnOutsidePage = () => {
+    if (navigator.standalone !== true || !/iPhone/.test(navigator.userAgent)) return false;
+    const dw = window.outerWidth - window.innerWidth;
+    const dh = window.outerHeight - window.innerHeight;
+    return (dw >= 60 && dw <= 110 && Math.abs(dh) < 4) || (dh >= 60 && dh <= 110 && Math.abs(dw) < 4);
+  };
+  if (columnOutsidePage()) store.set('duoColumn', true);
+  // 与主题项目 CFSM-Theme 的做法一致，切换时不用重载页面，状态栏颜色也能立即跟上：
+  // 根元素和 body 直接写上背景色与 color-scheme，theme-color 整枚换掉（只改 content 不一定生效）
   function applyTheme() {
     const mode = effectiveTheme();
     const root = document.documentElement;
@@ -130,8 +135,6 @@
       if (old) old.remove();
       document.head.appendChild(meta);
     }
-    const statusMeta = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
-    if (statusMeta && columnOutsidePage()) statusMeta.content = mode === 'dark' ? 'black-translucent' : 'default';
     // iOS 按贴边的不透明固定元素给状态栏 / 侧栏取色，且只在打开时取一次；仅靠 CSS 变量变色不会重新取色。
     // 主题项目是直接给顶栏写上新颜色，这里把两条贴边细条整枚换成写好新颜色的新元素
     document.querySelectorAll('.edge-guard, .edge-guard-right').forEach((el) => {
@@ -961,7 +964,7 @@
   }, 1000);
 
   // 诊断：网址加 ?diag 时在页面上显示侧边栏检测用到的各项数值和版本号（用于真机排查）
-  const APP_VERSION = '2026.10.28-v46';
+  const APP_VERSION = '2026.10.28-v47';
   function diagInfo() {
     const vv = window.visualViewport;
     const sa = safeArea();
@@ -981,6 +984,8 @@
       isIPhone,
       maxTouchPoints: navigator.maxTouchPoints,
       standalone: isStandalone,
+      statusBar: (document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]') || {}).content,
+      duoColumn: store.get('duoColumn', false),
       ua: navigator.userAgent,
     };
   }
