@@ -571,9 +571,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
   }
 }
 
-/* 横屏 / 宽而矮的屏幕（如 iPhone Duo 内屏横放 890×626、外屏横放 678×466）：
+/* 横屏 / 宽而矮的屏幕（如 iPhone Duo 内屏横放 890×626、外屏横放 678×466；iOS 27.2 起侧栏不再计入页面，外屏横放只剩 594×466）：
    顶部栏通栏；左侧二维码卡片按可用高度取尺寸；右侧楼层标题 + 可单独滚动的楼层网格 */
-@media (orientation: landscape) and (min-width: 600px) {
+@media (orientation: landscape) and (min-width: 560px) {
   #view-pass {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
@@ -598,6 +598,15 @@ button { font: inherit; color: inherit; cursor: pointer; }
     width: min(440px, max(160px, 100dvh - 172px - var(--sa-v)));
   }
   .floor-grid { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
+}
+/* 窄的横屏（iOS 27.2 的 Duo 外屏横放 594×466）：右侧楼层区只有不到 300px，
+   去掉「点击选层」提示、按钮再窄一些，保证一排至少两枚 */
+@media (orientation: landscape) and (min-width: 560px) and (max-width: 720px) {
+  #view-pass { column-gap: 14px; }
+  .floor-head h2 { font-size: 20px; }
+  .floor-head h2 small { display: none; }
+  .floor-head .chip { padding: 6px 12px; font-size: 13px; }
+  .floor-grid { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; }
 }
 
 /* 浏览器不支持 backdrop-filter 时退化为更不透明的底色，保证可读 */
