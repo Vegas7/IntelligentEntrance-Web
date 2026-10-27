@@ -33,7 +33,17 @@
         document.getElementById('meta-status').setAttribute('content', 'black-translucent');
     })();
   </script>
-  <link rel="manifest" href="manifest.webmanifest">
+  <script>
+    // iPhone / iPad 不加载 Web App Manifest：带 manifest 的主屏幕 App 在 iOS 27.2 上不理会 apple-mobile-web-app-status-bar-style，
+    // 折叠态 Duo 的页面就铺不到状态栏侧栏下面（主题项目 CFSM-Theme 没有 manifest，用 black-translucent 可以铺满）。
+    // iOS 只靠 apple-mobile-web-app-* 标签和 apple-touch-icon 添加到主屏幕；其他系统（Android 等）照常使用 manifest
+    if (!/iPhone|iPad|iPod/.test(navigator.userAgent) && !(navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
+      var mf = document.createElement('link');
+      mf.rel = 'manifest';
+      mf.href = 'manifest.webmanifest';
+      document.head.appendChild(mf);
+    }
+  </script>
   <link rel="icon" href="icon.svg" type="image/svg+xml" media="(prefers-color-scheme: light)">
   <link rel="icon" href="icon-dark.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="icon-192.png" type="image/png" sizes="192x192">

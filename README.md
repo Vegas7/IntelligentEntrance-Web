@@ -56,7 +56,7 @@ IntelligentEntrance-Web/
     ├── i18n.js            # 界面文案（中文 / English）
     ├── sw.js              # 离线缓存（Service Worker）
     ├── vendor/qrcode.js   # 二维码生成（qrcode-generator 1.4.4, MIT）
-    ├── manifest.webmanifest  # 可"添加到主屏幕"
+    ├── manifest.webmanifest  # 可"添加到主屏幕"（仅非 iOS 设备加载；iOS 靠 apple-mobile-web-app-* 标签）
     ├── icon.svg / icon-dark.svg / icon-*.png  # 网页图标（白底；暗色模式用黑底版）
     ├── icon-clear.svg / apple-touch-icon.png  # iOS 主屏幕图标：透明背景的小幽灵
     └── ghost.svg          # 小幽灵头像（SVG）
