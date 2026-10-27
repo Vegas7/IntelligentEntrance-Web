@@ -928,7 +928,7 @@
   }, 1000);
 
   // 诊断：网址加 ?diag 时在页面上显示侧边栏检测用到的各项数值和版本号（用于真机排查）
-  const APP_VERSION = '2026.10.27-v40';
+  const APP_VERSION = '2026.10.27-v41';
   function diagInfo() {
     const vv = window.visualViewport;
     const sa = safeArea();

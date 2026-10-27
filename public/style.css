@@ -556,9 +556,14 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .floor-head { margin: 14px 4px 10px; }
   .qr-card { padding: 12px 12px 10px; }
   .qr-meta { margin-top: 8px; }
+  /* 360px = 顶部栏 + 卡片内边距/倒计时 + 楼层标题 + 两排楼层按钮（紧凑间距）；iOS 27.2 的 Duo 外屏 382×678 下两排刚好铺满 */
+  .qr-box {
+    width: min(100%, 440px, max(200px, 100vh - 360px - var(--sa-v)));
+    width: min(100%, 440px, max(200px, 100dvh - 360px - var(--sa-v)));
+  }
 }
 
-/* 宽屏竖持（如 iPhone Duo 内屏竖放 669×930）：4 列楼层按钮较宽也较高，压扁并收紧间距，
+/* 宽屏竖持（如 iPhone Duo 内屏竖放 669×930，iOS 27.2 起 669×869）：4 列楼层按钮较宽也较高，压扁并收紧间距，
    二维码预算相应调整，保证两排楼层完整显示（普通 iPhone 竖屏宽度 < 560，不受影响） */
 @media (orientation: portrait) and (min-width: 560px) {
   .floor-tile { aspect-ratio: 1.6; border-radius: 18px; }
@@ -566,8 +571,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .floor-head { margin: 16px 4px 10px; }
   .floor-scroll { padding-bottom: calc(env(safe-area-inset-bottom) + 12px); }
   .qr-box {
-    width: min(100%, 440px, max(200px, 100vh - 430px - var(--sa-v)));
-    width: min(100%, 440px, max(200px, 100dvh - 430px - var(--sa-v)));
+    width: min(100%, 440px, max(200px, 100vh - 412px - var(--sa-v)));
+    width: min(100%, 440px, max(200px, 100dvh - 412px - var(--sa-v)));
   }
 }
 
