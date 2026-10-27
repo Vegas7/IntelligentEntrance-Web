@@ -593,9 +593,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
   }
   #view-pass > .floor-head { grid-column: 2; grid-row: 2; margin: 2px 4px 12px; }
   #view-pass > .floor-scroll { grid-column: 2; grid-row: 3; }
+  /* 164px = 顶部栏 + 卡片内边距/倒计时 + 卡片下方留白；二维码卡片正好占满左侧高度 */
   .qr-box {
-    width: min(440px, max(180px, 100vh - 200px - var(--sa-v)));
-    width: min(440px, max(180px, 100dvh - 200px - var(--sa-v)));
+    width: min(440px, max(180px, 100vh - 164px - var(--sa-v)));
+    width: min(440px, max(180px, 100dvh - 164px - var(--sa-v)));
   }
   /* 横屏透明侧栏（外屏横放）：按钮在侧栏里，顶部只剩标题，二维码可再大一些 */
   .has-side-column .qr-box {
