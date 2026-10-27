@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta id="meta-theme" name="theme-color" content="#f2f2f7">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta id="meta-status" name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="智能通行">
   <meta name="referrer" content="no-referrer">
@@ -17,7 +17,13 @@
       try { t = JSON.parse(localStorage.getItem('ie.theme')); } catch (e) {}
       if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
       var dark = t === 'dark' || (t !== 'light' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
-      document.getElementById('meta-theme').setAttribute('content', dark ? '#000000' : '#f2f2f7');
+      var color = dark ? '#000000' : '#f2f2f7', root = document.documentElement;
+      root.style.backgroundColor = color;
+      root.style.colorScheme = dark ? 'dark' : 'light';
+      document.getElementById('meta-theme').setAttribute('content', color);
+      // 侧栏在页面外（iOS 27.2 的折叠态 Duo 主屏幕 App）时，状态栏样式也跟随主题，见 app.js applyTheme
+      if (dark && navigator.standalone === true && (outerWidth - innerWidth >= 40 || outerHeight - innerHeight >= 40))
+        document.getElementById('meta-status').setAttribute('content', 'black-translucent');
     })();
   </script>
   <link rel="manifest" href="manifest.webmanifest">

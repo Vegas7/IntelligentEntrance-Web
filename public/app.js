@@ -104,11 +104,24 @@
   const darkMq = window.matchMedia('(prefers-color-scheme: dark)');
   // 用户未手动选择时跟随系统；手动切换后记住选择
   const effectiveTheme = () => document.documentElement.dataset.theme || (darkMq.matches ? 'dark' : 'light');
+  // iOS 27.2 起折叠态 iPhone Duo 的主屏幕 App 里，状态栏侧栏在页面之外（页面比屏幕窄 84px），由系统按页面颜色填充
+  const columnOutsidePage = () =>
+    navigator.standalone === true &&
+    (window.outerWidth - window.innerWidth >= 40 || window.outerHeight - window.innerHeight >= 40);
+  // 与主题项目 CFSM-Theme 的做法一致，切换时不用重载页面，状态栏 / Duo 侧栏的颜色也能立即跟上：
+  // 根元素和 body 直接写上背景色与 color-scheme，theme-color 整枚换掉（只改 content 不一定生效）；
+  // 侧栏在页面外时再同步状态栏样式（普通 iPhone 保持 default，避免页面钻到状态栏下面）
   function applyTheme() {
     const mode = effectiveTheme();
-    document.documentElement.dataset.mode = mode;
-    // 只改 content 时 iOS 不一定重新给状态栏 / Duo 侧栏取色，所以整枚换掉（与主题项目 CFSM-Theme 的做法一致）
+    const root = document.documentElement;
+    root.dataset.mode = mode;
     const color = mode === 'dark' ? '#000000' : '#f2f2f7';
+    root.style.backgroundColor = color;
+    root.style.colorScheme = mode;
+    if (document.body) {
+      document.body.style.backgroundColor = color;
+      document.body.style.colorScheme = mode;
+    }
     const old = document.querySelector('meta[name="theme-color"]');
     if (!old || old.getAttribute('content') !== color) {
       const meta = document.createElement('meta');
@@ -117,18 +130,10 @@
       if (old) old.remove();
       document.head.appendChild(meta);
     }
+    const statusMeta = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+    if (statusMeta && columnOutsidePage()) statusMeta.content = mode === 'dark' ? 'black-translucent' : 'default';
   }
-  // iOS 27.2 起折叠态 iPhone Duo 的主屏幕 App 里，状态栏侧栏在页面之外（页面比屏幕窄 84px），
-  // 侧栏颜色只在打开页面时按 theme-color 取一次，之后换主题不会跟着变 —— 换主题后重新载入页面让它重新取色
-  const columnOutsidePage = () =>
-    navigator.standalone === true &&
-    (window.outerWidth - window.innerWidth >= 40 || window.outerHeight - window.innerHeight >= 40);
-  function applyThemeAndColumn() {
-    const before = document.documentElement.dataset.mode;
-    applyTheme();
-    if (document.documentElement.dataset.mode !== before && columnOutsidePage()) location.reload();
-  }
-  if (darkMq.addEventListener) darkMq.addEventListener('change', applyThemeAndColumn);
+  if (darkMq.addEventListener) darkMq.addEventListener('change', applyTheme);
 
   document.querySelectorAll('.js-lang').forEach((b) =>
     b.addEventListener('click', () => setLanguage(lang === 'zh' ? 'en' : 'zh'))
@@ -138,7 +143,7 @@
       const next = effectiveTheme() === 'dark' ? 'light' : 'dark';
       document.documentElement.dataset.theme = next;
       store.set('theme', next);
-      applyThemeAndColumn();
+      applyTheme();
     })
   );
 
@@ -947,7 +952,7 @@
   }, 1000);
 
   // 诊断：网址加 ?diag 时在页面上显示侧边栏检测用到的各项数值和版本号（用于真机排查）
-  const APP_VERSION = '2026.10.28-v44';
+  const APP_VERSION = '2026.10.28-v45';
   function diagInfo() {
     const vv = window.visualViewport;
     const sa = safeArea();
