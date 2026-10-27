@@ -118,8 +118,19 @@
   function rememberDuo() {
     if (!columnOutsidePage() || store.get('duoColumn', false)) return;
     store.set('duoColumn', true);
+    extendUnderColumn();
+  }
+  // 页面打开时状态栏样式就是 black-translucent 并不管用（实机：页面仍止于侧栏）；主题项目 CFSM-Theme 的页面
+  // 只在运行中把它从 default 切到 black-translucent（切换深浅色）之后才铺到侧栏下面，重新打开又恢复。
+  // 所以在 Duo 上每次打开、页面载入后照做一次：index.html 里保持 default，这里再改成 black-translucent
+  function extendUnderColumn() {
     const statusMeta = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
-    if (statusMeta) statusMeta.content = 'black-translucent';
+    if (statusMeta && statusMeta.content !== 'black-translucent') statusMeta.content = 'black-translucent';
+  }
+  if (store.get('duoColumn', false)) {
+    const later = () => setTimeout(extendUnderColumn, 300);
+    if (document.readyState === 'complete') later();
+    else window.addEventListener('load', later, { once: true });
   }
   // 与主题项目 CFSM-Theme 的做法一致，切换时不用重载页面，状态栏颜色也能立即跟上：
   // 根元素和 body 直接写上背景色与 color-scheme，theme-color 整枚换掉（只改 content 不一定生效）
@@ -972,7 +983,7 @@
   }, 1000);
 
   // 诊断：网址加 ?diag 时在页面上显示侧边栏检测用到的各项数值和版本号（用于真机排查）
-  const APP_VERSION = '2026.10.28-v50';
+  const APP_VERSION = '2026.10.28-v51';
   function diagInfo() {
     const vv = window.visualViewport;
     const sa = safeArea();
