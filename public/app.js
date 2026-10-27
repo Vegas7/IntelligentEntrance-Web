@@ -118,7 +118,17 @@
       document.head.appendChild(meta);
     }
   }
-  if (darkMq.addEventListener) darkMq.addEventListener('change', applyTheme);
+  // iOS 27.2 起折叠态 iPhone Duo 的主屏幕 App 里，状态栏侧栏在页面之外（页面比屏幕窄 84px），
+  // 侧栏颜色只在打开页面时按 theme-color 取一次，之后换主题不会跟着变 —— 换主题后重新载入页面让它重新取色
+  const columnOutsidePage = () =>
+    navigator.standalone === true &&
+    (window.outerWidth - window.innerWidth >= 40 || window.outerHeight - window.innerHeight >= 40);
+  function applyThemeAndColumn() {
+    const before = document.documentElement.dataset.mode;
+    applyTheme();
+    if (document.documentElement.dataset.mode !== before && columnOutsidePage()) location.reload();
+  }
+  if (darkMq.addEventListener) darkMq.addEventListener('change', applyThemeAndColumn);
 
   document.querySelectorAll('.js-lang').forEach((b) =>
     b.addEventListener('click', () => setLanguage(lang === 'zh' ? 'en' : 'zh'))
@@ -128,7 +138,7 @@
       const next = effectiveTheme() === 'dark' ? 'light' : 'dark';
       document.documentElement.dataset.theme = next;
       store.set('theme', next);
-      applyTheme();
+      applyThemeAndColumn();
     })
   );
 
@@ -937,7 +947,7 @@
   }, 1000);
 
   // 诊断：网址加 ?diag 时在页面上显示侧边栏检测用到的各项数值和版本号（用于真机排查）
-  const APP_VERSION = '2026.10.28-v43';
+  const APP_VERSION = '2026.10.28-v44';
   function diagInfo() {
     const vv = window.visualViewport;
     const sa = safeArea();
