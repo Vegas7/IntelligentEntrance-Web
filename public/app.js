@@ -108,7 +108,8 @@
   // 遇到这种情况就记下这是 Duo：之后打开时 index.html 首帧脚本改用 black-translucent，让页面铺到侧栏下面
   // 恰好一边比窗口短 60–110px（侧栏宽约 84），另一边相同
   const columnOutsidePage = () => {
-    if (navigator.standalone !== true || !/iPhone/.test(navigator.userAgent)) return false;
+    const standalone = navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+    if (!standalone || !/iPhone/.test(navigator.userAgent)) return false;
     const dw = window.outerWidth - window.innerWidth;
     const dh = window.outerHeight - window.innerHeight;
     return (dw >= 60 && dw <= 110 && Math.abs(dh) < 4) || (dh >= 60 && dh <= 110 && Math.abs(dw) < 4);
@@ -964,7 +965,7 @@
   }, 1000);
 
   // 诊断：网址加 ?diag 时在页面上显示侧边栏检测用到的各项数值和版本号（用于真机排查）
-  const APP_VERSION = '2026.10.28-v47';
+  const APP_VERSION = '2026.10.28-v48';
   function diagInfo() {
     const vv = window.visualViewport;
     const sa = safeArea();
@@ -984,6 +985,8 @@
       isIPhone,
       maxTouchPoints: navigator.maxTouchPoints,
       standalone: isStandalone,
+      navigatorStandalone: String(navigator.standalone),
+      displayModeStandalone: window.matchMedia('(display-mode: standalone)').matches,
       statusBar: (document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]') || {}).content,
       duoColumn: store.get('duoColumn', false),
       ua: navigator.userAgent,

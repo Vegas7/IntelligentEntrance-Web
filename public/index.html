@@ -27,7 +27,9 @@
       // 本次打开若已是页面外侧栏（恰好一边比窗口短 60–110px）即判定为 Duo，并记下来（app.js 写 ie.duoColumn）供以后打开时直接使用
       var duo = false, dw, dh;
       try { duo = JSON.parse(localStorage.getItem('ie.duoColumn')) === true; } catch (e) {}
-      if (navigator.standalone === true && /iPhone/.test(navigator.userAgent) && (duo || ((dw = outerWidth - innerWidth) >= 60 && dw <= 110 && Math.abs(outerHeight - innerHeight) < 4) || ((dh = outerHeight - innerHeight) >= 60 && dh <= 110 && Math.abs(outerWidth - innerWidth) < 4)))
+      // iOS 27.2 的主屏幕 App 里 navigator.standalone 不再是 true，同时看 display-mode
+      var standalone = navigator.standalone === true || (window.matchMedia && matchMedia('(display-mode: standalone)').matches);
+      if (standalone && /iPhone/.test(navigator.userAgent) && (duo || ((dw = outerWidth - innerWidth) >= 60 && dw <= 110 && Math.abs(outerHeight - innerHeight) < 4) || ((dh = outerHeight - innerHeight) >= 60 && dh <= 110 && Math.abs(outerWidth - innerWidth) < 4)))
         document.getElementById('meta-status').setAttribute('content', 'black-translucent');
     })();
   </script>
