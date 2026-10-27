@@ -5,17 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta id="meta-theme" name="theme-color" content="#f2f2f7">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="智能通行">
   <meta name="referrer" content="no-referrer">
   <title>智能通行</title>
   <script>
-    // 首帧前应用用户选择的主题，避免闪烁
+    // 首帧前应用用户选择的主题，避免闪烁；theme-color 也在这里先定好（iOS 用它给状态栏 / Duo 侧栏着色）
     (function () {
-      try {
-        var t = JSON.parse(localStorage.getItem('ie.theme'));
-        if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
-      } catch (e) {}
+      var t = null;
+      try { t = JSON.parse(localStorage.getItem('ie.theme')); } catch (e) {}
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+      var dark = t === 'dark' || (t !== 'light' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+      document.getElementById('meta-theme').setAttribute('content', dark ? '#000000' : '#f2f2f7');
     })();
   </script>
   <link rel="manifest" href="manifest.webmanifest">

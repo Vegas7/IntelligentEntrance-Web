@@ -107,7 +107,16 @@
   function applyTheme() {
     const mode = effectiveTheme();
     document.documentElement.dataset.mode = mode;
-    $('meta-theme').setAttribute('content', mode === 'dark' ? '#000000' : '#f2f2f7');
+    // 只改 content 时 iOS 不一定重新给状态栏 / Duo 侧栏取色，所以整枚换掉（与主题项目 CFSM-Theme 的做法一致）
+    const color = mode === 'dark' ? '#000000' : '#f2f2f7';
+    const old = document.querySelector('meta[name="theme-color"]');
+    if (!old || old.getAttribute('content') !== color) {
+      const meta = document.createElement('meta');
+      meta.name = 'theme-color';
+      meta.content = color;
+      if (old) old.remove();
+      document.head.appendChild(meta);
+    }
   }
   if (darkMq.addEventListener) darkMq.addEventListener('change', applyTheme);
 
@@ -928,7 +937,7 @@
   }, 1000);
 
   // 诊断：网址加 ?diag 时在页面上显示侧边栏检测用到的各项数值和版本号（用于真机排查）
-  const APP_VERSION = '2026.10.27-v42';
+  const APP_VERSION = '2026.10.28-v43';
   function diagInfo() {
     const vv = window.visualViewport;
     const sa = safeArea();
