@@ -983,7 +983,7 @@
   }, 1000);
 
   // 诊断：网址加 ?diag 时在页面上显示侧边栏检测用到的各项数值和版本号（用于真机排查）
-  const APP_VERSION = '2026.10.28-v51';
+  const APP_VERSION = '2026.10.28-v52';
   function diagInfo() {
     const vv = window.visualViewport;
     const sa = safeArea();
@@ -1021,12 +1021,79 @@
       diagBox = null;
       return;
     }
-    diagBox = document.createElement('pre');
+    diagBox = document.createElement('div');
     diagBox.className = 'diag-box';
-    const render = () => { if (diagBox) diagBox.textContent = Object.entries(diagInfo()).map(([k, v]) => `${k}: ${v}`).join('\n'); };
+    const head = document.createElement('div');
+    head.className = 'diag-head';
+    const tests = document.createElement('div');
+    tests.className = 'diag-tests';
+    const log = document.createElement('div');
+    log.className = 'diag-log';
+    const pre = document.createElement('pre');
+    diagBox.append(head, tests, log, pre);
+    const statusMeta = () => document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+    const size = () => `${window.innerWidth}×${window.innerHeight} / ${window.outerWidth}×${window.outerHeight}`;
+    const render = () => {
+      if (!diagBox) return;
+      head.textContent = `inner/outer ${size()} · status ${(statusMeta() || {}).content}`;
+      pre.textContent = Object.entries(diagInfo()).map(([k, v]) => `${k}: ${v}`).join('\n');
+    };
+    // iOS 27.2 Duo 侧栏实验：逐个尝试主题项目 CFSM-Theme 切换深浅色时做的每一步，看哪一步让页面铺到侧栏下面
+    const setThemeColor = (color) => {
+      document.querySelectorAll('meta[name="theme-color"]').forEach((el) => el.remove());
+      const meta = document.createElement('meta');
+      meta.name = 'theme-color';
+      meta.content = color;
+      document.head.appendChild(meta);
+    };
+    const setStatus = (v) => { const m = statusMeta(); if (m) m.content = v; };
+    const reinsertStatus = (v) => {
+      const m = statusMeta();
+      if (m) m.remove();
+      const meta = document.createElement('meta');
+      meta.name = 'apple-mobile-web-app-status-bar-style';
+      meta.content = v;
+      document.head.appendChild(meta);
+    };
+    const flip = (dark) => {
+      const color = dark ? '#09090b' : '#f4f5f7';
+      const root = document.documentElement;
+      root.style.colorScheme = dark ? 'dark' : 'light';
+      root.style.backgroundColor = color;
+      document.body.style.backgroundColor = color;
+      document.body.style.colorScheme = dark ? 'dark' : 'light';
+      setThemeColor(color);
+      setStatus(dark ? 'black-translucent' : 'default');
+    };
+    const actions = [
+      ['1 SB default', () => setStatus('default')],
+      ['2 SB translucent', () => setStatus('black-translucent')],
+      ['3 SB black', () => setStatus('black')],
+      ['4 SB re-insert transl.', () => reinsertStatus('black-translucent')],
+      ['5 theme-color dark', () => setThemeColor('#09090b')],
+      ['6 theme-color light', () => setThemeColor('#f4f5f7')],
+      ['7 CFSM flip → dark', () => flip(true)],
+      ['8 CFSM flip → light', () => flip(false)],
+    ];
+    actions.forEach(([label, fn]) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = label;
+      b.addEventListener('click', () => {
+        const before = size();
+        fn();
+        render();
+        // 记下按下前后的尺寸，以及 0.3 / 1 / 2.5 秒后的页面宽度
+        const line = document.createElement('div');
+        line.textContent = `${label}: ${before} →`;
+        log.prepend(line);
+        [300, 1000, 2500].forEach((ms) => setTimeout(() => { line.textContent += ` ${ms}ms:${window.innerWidth}`; render(); }, ms));
+      });
+      tests.appendChild(b);
+    });
     render();
     document.body.appendChild(diagBox);
-    diagTimer = setInterval(render, 1000);
+    diagTimer = setInterval(render, 500);
   }
   if (queryHas('diag')) toggleDiag();
   let titleTaps = [];
