@@ -114,7 +114,13 @@
     const dh = window.outerHeight - window.innerHeight;
     return (dw >= 60 && dw <= 110 && Math.abs(dh) < 4) || (dh >= 60 && dh <= 110 && Math.abs(dw) < 4);
   };
-  if (columnOutsidePage()) store.set('duoColumn', true);
+  // iOS 在脚本运行之后才把页面缩窄（冷启动时没有 resize 事件），所以随侧栏检测一起反复检查（见 updateSideRail）
+  function rememberDuo() {
+    if (!columnOutsidePage() || store.get('duoColumn', false)) return;
+    store.set('duoColumn', true);
+    const statusMeta = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+    if (statusMeta) statusMeta.content = 'black-translucent';
+  }
   // 与主题项目 CFSM-Theme 的做法一致，切换时不用重载页面，状态栏颜色也能立即跟上：
   // 根元素和 body 直接写上背景色与 color-scheme，theme-color 整枚换掉（只改 content 不一定生效）
   function applyTheme() {
@@ -930,6 +936,7 @@
     return false;
   }
   function updateSideRail() {
+    rememberDuo();
     const side = sideColumnSide();
     // 只有外屏（横放宽度 ≤ 720）的摄像头在侧栏底部；内屏是屏下摄像头，侧栏底部是空的，不需要避让
     document.documentElement.classList.toggle('cam-bottom', !!side && (simCamBottom || (window.innerWidth > window.innerHeight && window.innerWidth <= 720 && rotatedClockwise())));
@@ -957,7 +964,7 @@
   let lastLayoutKey = '';
   setInterval(() => {
     const sa = safeArea();
-    const key = `${sa.top},${sa.right},${sa.bottom},${sa.left},${window.innerWidth}x${window.innerHeight}`;
+    const key = `${sa.top},${sa.right},${sa.bottom},${sa.left},${window.innerWidth}x${window.innerHeight},${window.outerWidth}x${window.outerHeight}`;
     if (key !== lastLayoutKey) {
       lastLayoutKey = key;
       updateSideRail();
@@ -965,7 +972,7 @@
   }, 1000);
 
   // 诊断：网址加 ?diag 时在页面上显示侧边栏检测用到的各项数值和版本号（用于真机排查）
-  const APP_VERSION = '2026.10.28-v48';
+  const APP_VERSION = '2026.10.28-v49';
   function diagInfo() {
     const vv = window.visualViewport;
     const sa = safeArea();
