@@ -132,6 +132,15 @@
     }
     const statusMeta = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
     if (statusMeta && columnOutsidePage()) statusMeta.content = mode === 'dark' ? 'black-translucent' : 'default';
+    // iOS 按贴边的不透明固定元素给状态栏 / 侧栏取色，且只在打开时取一次；仅靠 CSS 变量变色不会重新取色。
+    // 主题项目是直接给顶栏写上新颜色，这里把两条贴边细条整枚换成写好新颜色的新元素
+    document.querySelectorAll('.edge-guard, .edge-guard-right').forEach((el) => {
+      if (el.dataset.color === color) return;
+      const fresh = el.cloneNode(false);
+      fresh.dataset.color = color;
+      fresh.style.backgroundColor = color;
+      el.replaceWith(fresh);
+    });
   }
   if (darkMq.addEventListener) darkMq.addEventListener('change', applyTheme);
 
@@ -952,7 +961,7 @@
   }, 1000);
 
   // 诊断：网址加 ?diag 时在页面上显示侧边栏检测用到的各项数值和版本号（用于真机排查）
-  const APP_VERSION = '2026.10.28-v45';
+  const APP_VERSION = '2026.10.28-v46';
   function diagInfo() {
     const vv = window.visualViewport;
     const sa = safeArea();
