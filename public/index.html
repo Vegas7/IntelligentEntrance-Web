@@ -5,35 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta id="meta-theme" name="theme-color" content="#f2f2f7">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta id="meta-status" name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="智能通行">
   <meta name="referrer" content="no-referrer">
   <title>智能通行</title>
   <script>
-    // 首帧前应用用户选择的主题，避免闪烁；theme-color 也在这里先定好（iOS 用它给状态栏着色）
+    // 首帧前应用用户选择的主题，避免闪烁；theme-color 也在这里先定好：
+    // iOS 27.2 的折叠态 iPhone Duo 主屏幕 App 里，状态栏侧栏在页面之外，系统只在打开时按 theme-color 给它上色
     (function () {
       var t = null;
       try { t = JSON.parse(localStorage.getItem('ie.theme')); } catch (e) {}
       if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
       var dark = t === 'dark' || (t !== 'light' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
-      var color = dark ? '#000000' : '#f2f2f7', root = document.documentElement;
-      root.style.backgroundColor = color;
-      root.style.colorScheme = dark ? 'dark' : 'light';
-      document.getElementById('meta-theme').setAttribute('content', color);
+      document.getElementById('meta-theme').setAttribute('content', dark ? '#000000' : '#f2f2f7');
     })();
   </script>
-  <script>
-    // iPhone / iPad 不加载 Web App Manifest：带 manifest 的主屏幕 App 在 iOS 27.2 上不理会 apple-mobile-web-app-status-bar-style，
-    // 折叠态 Duo 的页面就铺不到状态栏侧栏下面（主题项目 CFSM-Theme 没有 manifest，用 black-translucent 可以铺满）。
-    // iOS 只靠 apple-mobile-web-app-* 标签和 apple-touch-icon 添加到主屏幕；其他系统（Android 等）照常使用 manifest
-    if (!/iPhone|iPad|iPod/.test(navigator.userAgent) && !(navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
-      var mf = document.createElement('link');
-      mf.rel = 'manifest';
-      mf.href = 'manifest.webmanifest';
-      document.head.appendChild(mf);
-    }
-  </script>
+  <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml" media="(prefers-color-scheme: light)">
   <link rel="icon" href="icon-dark.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="icon-192.png" type="image/png" sizes="192x192">

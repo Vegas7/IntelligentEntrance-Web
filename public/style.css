@@ -633,11 +633,5 @@ button { font: inherit; color: inherit; cursor: pointer; }
   font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   white-space: pre-wrap; word-break: break-all;
   border-radius: 14px;
-  max-height: 70vh; overflow-y: auto;
+  pointer-events: none;
 }
-.diag-box pre { margin: 8px 0 0; white-space: pre-wrap; font: inherit; opacity: .8; }
-.diag-head { font-weight: 600; font-size: 13px; }
-.diag-tests { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-top: 8px; }
-.diag-tests button { padding: 8px 6px; border: 0; border-radius: 10px; background: rgba(255, 255, 255, .18); color: #fff; font: inherit; text-align: left; }
-.diag-tests button:active { background: rgba(255, 255, 255, .35); }
-.diag-log { margin-top: 6px; color: #9fd0ff; }

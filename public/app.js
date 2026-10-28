@@ -104,64 +104,10 @@
   const darkMq = window.matchMedia('(prefers-color-scheme: dark)');
   // 用户未手动选择时跟随系统；手动切换后记住选择
   const effectiveTheme = () => document.documentElement.dataset.theme || (darkMq.matches ? 'dark' : 'light');
-  // iOS 27.2 起 iPhone Duo 的主屏幕 App 在状态栏样式为 default 时，状态栏侧栏在页面之外（页面比窗口窄 / 矮 84px 左右）。
-  // 遇到这种情况就记下这是 Duo：之后打开时 index.html 首帧脚本改用 black-translucent，让页面铺到侧栏下面
-  // 恰好一边比窗口短 60–110px（侧栏宽约 84），另一边相同
-  const columnOutsidePage = () => {
-    const standalone = navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
-    if (!standalone || !/iPhone/.test(navigator.userAgent)) return false;
-    const dw = window.outerWidth - window.innerWidth;
-    const dh = window.outerHeight - window.innerHeight;
-    return (dw >= 60 && dw <= 110 && Math.abs(dh) < 4) || (dh >= 60 && dh <= 110 && Math.abs(dw) < 4);
-  };
-  // iOS 在脚本运行之后才把页面缩窄（冷启动时没有 resize 事件），所以随侧栏检测一起反复检查（见 updateSideRail）
-  function rememberDuo() {
-    if (!columnOutsidePage() || store.get('duoColumn', false)) return;
-    store.set('duoColumn', true);
-    extendUnderColumn();
-  }
-  // 页面打开时状态栏样式就是 black-translucent 并不管用（实机：页面仍止于侧栏）；主题项目 CFSM-Theme 的页面
-  // 只在运行中把它从 default 切到 black-translucent（切换深浅色）之后才铺到侧栏下面，重新打开又恢复。
-  // 所以在 Duo 上每次打开、页面载入后照做一次：index.html 里保持 default，这里再改成 black-translucent
-  function extendUnderColumn() {
-    const statusMeta = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
-    if (statusMeta && statusMeta.content !== 'black-translucent') statusMeta.content = 'black-translucent';
-  }
-  if (store.get('duoColumn', false)) {
-    const later = () => setTimeout(extendUnderColumn, 300);
-    if (document.readyState === 'complete') later();
-    else window.addEventListener('load', later, { once: true });
-  }
-  // 与主题项目 CFSM-Theme 的做法一致，切换时不用重载页面，状态栏颜色也能立即跟上：
-  // 根元素和 body 直接写上背景色与 color-scheme，theme-color 整枚换掉（只改 content 不一定生效）
   function applyTheme() {
     const mode = effectiveTheme();
-    const root = document.documentElement;
-    root.dataset.mode = mode;
-    const color = mode === 'dark' ? '#000000' : '#f2f2f7';
-    root.style.backgroundColor = color;
-    root.style.colorScheme = mode;
-    if (document.body) {
-      document.body.style.backgroundColor = color;
-      document.body.style.colorScheme = mode;
-    }
-    const old = document.querySelector('meta[name="theme-color"]');
-    if (!old || old.getAttribute('content') !== color) {
-      const meta = document.createElement('meta');
-      meta.name = 'theme-color';
-      meta.content = color;
-      if (old) old.remove();
-      document.head.appendChild(meta);
-    }
-    // iOS 按贴边的不透明固定元素给状态栏 / 侧栏取色，且只在打开时取一次；仅靠 CSS 变量变色不会重新取色。
-    // 主题项目是直接给顶栏写上新颜色，这里把两条贴边细条整枚换成写好新颜色的新元素
-    document.querySelectorAll('.edge-guard, .edge-guard-right').forEach((el) => {
-      if (el.dataset.color === color) return;
-      const fresh = el.cloneNode(false);
-      fresh.dataset.color = color;
-      fresh.style.backgroundColor = color;
-      el.replaceWith(fresh);
-    });
+    document.documentElement.dataset.mode = mode;
+    $('meta-theme').setAttribute('content', mode === 'dark' ? '#000000' : '#f2f2f7');
   }
   if (darkMq.addEventListener) darkMq.addEventListener('change', applyTheme);
 
@@ -947,7 +893,6 @@
     return false;
   }
   function updateSideRail() {
-    rememberDuo();
     const side = sideColumnSide();
     // 只有外屏（横放宽度 ≤ 720）的摄像头在侧栏底部；内屏是屏下摄像头，侧栏底部是空的，不需要避让
     document.documentElement.classList.toggle('cam-bottom', !!side && (simCamBottom || (window.innerWidth > window.innerHeight && window.innerWidth <= 720 && rotatedClockwise())));
@@ -975,7 +920,7 @@
   let lastLayoutKey = '';
   setInterval(() => {
     const sa = safeArea();
-    const key = `${sa.top},${sa.right},${sa.bottom},${sa.left},${window.innerWidth}x${window.innerHeight},${window.outerWidth}x${window.outerHeight}`;
+    const key = `${sa.top},${sa.right},${sa.bottom},${sa.left},${window.innerWidth}x${window.innerHeight}`;
     if (key !== lastLayoutKey) {
       lastLayoutKey = key;
       updateSideRail();
@@ -983,7 +928,7 @@
   }, 1000);
 
   // 诊断：网址加 ?diag 时在页面上显示侧边栏检测用到的各项数值和版本号（用于真机排查）
-  const APP_VERSION = '2026.10.28-v52';
+  const APP_VERSION = '2026.10.28-v53';
   function diagInfo() {
     const vv = window.visualViewport;
     const sa = safeArea();
@@ -1003,10 +948,6 @@
       isIPhone,
       maxTouchPoints: navigator.maxTouchPoints,
       standalone: isStandalone,
-      navigatorStandalone: String(navigator.standalone),
-      displayModeStandalone: window.matchMedia('(display-mode: standalone)').matches,
-      statusBar: (document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]') || {}).content,
-      duoColumn: store.get('duoColumn', false),
       ua: navigator.userAgent,
     };
   }
@@ -1021,79 +962,12 @@
       diagBox = null;
       return;
     }
-    diagBox = document.createElement('div');
+    diagBox = document.createElement('pre');
     diagBox.className = 'diag-box';
-    const head = document.createElement('div');
-    head.className = 'diag-head';
-    const tests = document.createElement('div');
-    tests.className = 'diag-tests';
-    const log = document.createElement('div');
-    log.className = 'diag-log';
-    const pre = document.createElement('pre');
-    diagBox.append(head, tests, log, pre);
-    const statusMeta = () => document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
-    const size = () => `${window.innerWidth}×${window.innerHeight} / ${window.outerWidth}×${window.outerHeight}`;
-    const render = () => {
-      if (!diagBox) return;
-      head.textContent = `inner/outer ${size()} · status ${(statusMeta() || {}).content}`;
-      pre.textContent = Object.entries(diagInfo()).map(([k, v]) => `${k}: ${v}`).join('\n');
-    };
-    // iOS 27.2 Duo 侧栏实验：逐个尝试主题项目 CFSM-Theme 切换深浅色时做的每一步，看哪一步让页面铺到侧栏下面
-    const setThemeColor = (color) => {
-      document.querySelectorAll('meta[name="theme-color"]').forEach((el) => el.remove());
-      const meta = document.createElement('meta');
-      meta.name = 'theme-color';
-      meta.content = color;
-      document.head.appendChild(meta);
-    };
-    const setStatus = (v) => { const m = statusMeta(); if (m) m.content = v; };
-    const reinsertStatus = (v) => {
-      const m = statusMeta();
-      if (m) m.remove();
-      const meta = document.createElement('meta');
-      meta.name = 'apple-mobile-web-app-status-bar-style';
-      meta.content = v;
-      document.head.appendChild(meta);
-    };
-    const flip = (dark) => {
-      const color = dark ? '#09090b' : '#f4f5f7';
-      const root = document.documentElement;
-      root.style.colorScheme = dark ? 'dark' : 'light';
-      root.style.backgroundColor = color;
-      document.body.style.backgroundColor = color;
-      document.body.style.colorScheme = dark ? 'dark' : 'light';
-      setThemeColor(color);
-      setStatus(dark ? 'black-translucent' : 'default');
-    };
-    const actions = [
-      ['1 SB default', () => setStatus('default')],
-      ['2 SB translucent', () => setStatus('black-translucent')],
-      ['3 SB black', () => setStatus('black')],
-      ['4 SB re-insert transl.', () => reinsertStatus('black-translucent')],
-      ['5 theme-color dark', () => setThemeColor('#09090b')],
-      ['6 theme-color light', () => setThemeColor('#f4f5f7')],
-      ['7 CFSM flip → dark', () => flip(true)],
-      ['8 CFSM flip → light', () => flip(false)],
-    ];
-    actions.forEach(([label, fn]) => {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.textContent = label;
-      b.addEventListener('click', () => {
-        const before = size();
-        fn();
-        render();
-        // 记下按下前后的尺寸，以及 0.3 / 1 / 2.5 秒后的页面宽度
-        const line = document.createElement('div');
-        line.textContent = `${label}: ${before} →`;
-        log.prepend(line);
-        [300, 1000, 2500].forEach((ms) => setTimeout(() => { line.textContent += ` ${ms}ms:${window.innerWidth}`; render(); }, ms));
-      });
-      tests.appendChild(b);
-    });
+    const render = () => { if (diagBox) diagBox.textContent = Object.entries(diagInfo()).map(([k, v]) => `${k}: ${v}`).join('\n'); };
     render();
     document.body.appendChild(diagBox);
-    diagTimer = setInterval(render, 500);
+    diagTimer = setInterval(render, 1000);
   }
   if (queryHas('diag')) toggleDiag();
   let titleTaps = [];
